@@ -7,6 +7,14 @@ On windows I use the cygwin environemnt. Cygwin is a collection of GNU and Open 
  * gcc
  * make
  * git
- * gitk (still have issues on this one)
+ * gitk
  * vim (if this is your editor)
 
+## XWindow on Windows
+Cygwin/X11 doesn't work on win32. To make graphical cygwin application run I have installed a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
+
+```bash
+$ export DISPLAY=:0.0
+```
+
+You should place this variable in bashrc so that you won't type it everytime you start bash.
