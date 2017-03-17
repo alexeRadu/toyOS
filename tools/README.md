@@ -21,3 +21,9 @@ You should place this variable in bashrc so that you won't type it everytime you
 
 ## GDB frontend
 GDB is a powerfull debugger that integrates well with simulators. It's drawback is the lack of a powerful interface that would ease debugging. The variant that I am testing right now is a better command line interface. It does not need additional add-ons and is implemented through the use of a .gdbinit file. It can be downloaded from https://github.com/cyrus-and/gdb-dashboard.git.
+
+## Test Images
+To test the setup there are several images provided by the qemu team. You can find them at:
+http://wiki.qemu-project.org/Testing/System_Images
+
+For simplicity one has been added at tools/minix2004.tar.bz2
