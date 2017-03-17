@@ -18,3 +18,6 @@ $ export DISPLAY=:0.0
 ```
 
 You should place this variable in bashrc so that you won't type it everytime you start bash.
+
+## GDB frontend
+GDB is a powerfull debugger that integrates well with simulators. It's drawback is the lack of a powerful interface that would ease debugging. The variant that I am testing right now is a better command line interface. It does not need additional add-ons and is implemented through the use of a .gdbinit file. It can be downloaded from https://github.com/cyrus-and/gdb-dashboard.git.
