@@ -10,6 +10,11 @@ There are a few prerequisites:
 ```bash
 $ sudo apt-get install vim
 ```
+2. Source control management:
+```bash
+$ sudo apt-get install git && sudo apt-get install gitk
+```
+
 ## XWindow on Windows
 Cygwin/X11 doesn't work on win32. To make graphical cygwin application run I have installed a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
 
