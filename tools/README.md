@@ -18,6 +18,13 @@ $ sudo apt-get install git && sudo apt-get install gitk
 ```bash
 $ sudo apt-get install build-essential
 ```
+The previous instruction installs the GNU C Compiler suite (GCC) and make.
+
+4. Virtual machine emulator
+```bash
+$ sudo apt-get install qemu
+```
+Qemu is a software that emulates different processors from the most common (x86, arm) to the most esoteric. It is the most used machine emulator and is currently under heavy development. The above instruction installs the whole suite of emulator.
 
 ## XWindow on Windows
 Cygwin/X11 doesn't work on win32. To make graphical cygwin application run I have installed a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
