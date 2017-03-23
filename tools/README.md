@@ -6,7 +6,6 @@ This folder contains a set of tools (VMs, compilers, debuggers) for bareboard de
 There are a few prerequisites:
 
 1. vim (or the preffered editor)
-
 ```bash
 $ sudo apt-get install vim
 ```
