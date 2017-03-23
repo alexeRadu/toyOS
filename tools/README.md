@@ -34,7 +34,7 @@ To start the image go to the project directory in Linux (VMBox) and type the fol
 ```bash
 $ cd tools
 $ tar -xvf minix2004.tar.bz2
-$ cd minix2004.tar.bz2
+$ cd minix2004
 $ qemu-system-x86_64 -m 8M -fda vfloppya.img -hda minix204.img -boot c -S -s &
 ```
 
