@@ -9,9 +9,14 @@ There are a few prerequisites:
 ```bash
 $ sudo apt-get install vim
 ```
-2. Source control management:
+2. Source control management
 ```bash
 $ sudo apt-get install git && sudo apt-get install gitk
+```
+
+3. Compiler suite
+```bash
+$ sudo apt-get install build-essential
 ```
 
 ## XWindow on Windows
