@@ -1,6 +1,6 @@
-# Bareboard development tools
+# Development Environment Setup
 
-This folder contains a set of tools (VMs, compilers, debuggers) for bareboard development together with configuration scripts.
+This document is intended to provide a complete specification for the environment used for the development of the toyOS. It is based on Ubuntu 16.04 LTS or any other distro that is built on top of it. The environment can be setup either on a Linux machine, with the distro installed as a host OS, or on a Windows machine with the distro installed inside a virtual machine.
 
 ## On Linux
 There are a few prerequisites:
