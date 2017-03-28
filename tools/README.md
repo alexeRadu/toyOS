@@ -36,26 +36,14 @@ $ cp tools/.gdbinit ~
 To test the setup there are several images provided by the qemu team. You can find them at:
 http://wiki.qemu-project.org/Testing/System_Images
 
-For simplicity one has been added at tools/minix2004.tar.bz2
-
-## Start an image
-To start the image go to the project directory in Linux (VMBox) and type the following:
+For simplicity one has been added at images/minix204. To start the image just run:
 
 ```bash
-$ cd tools
-$ tar -xvf minix2004.tar.bz2
-$ cd minix2004
-$ qemu-system-x86_64 -m 8M -fda vfloppya.img -hda minix204.img -boot c -S -s &
+$ ./start
 ```
 
-This will start qemu on a different thread with the provided image and a gdb debugger server that listens on tcp::1234. Qemu will pause the CPU on start and will wait for a connection from GDB.
+After running the start script you will be in the gdb console waiting for other commands. Issue __continue__ to start the image.
 
-```bash
-$ gdb
-```
-
-Then inside the gdb console write:
-```bash
-> target remote localhost:1234
+```gdb
 > continue
 ```
