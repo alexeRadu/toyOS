@@ -3,28 +3,18 @@
 This document is intended to provide a complete specification for the environment used for the development of the toyOS. It is based on Ubuntu 16.04 LTS or any other distro that is built on top of it. The environment can be setup either on a Linux machine, with the distro installed as a host OS, or on a Windows machine with the distro installed inside a virtual machine.
 
 ## On Linux
-There are a few prerequisites:
+There are a few prerequisites you need to install:
 
-1. vim (or the preffered editor)
 ```bash
-$ sudo apt-get install vim
-```
-2. Source control management
-```bash
-$ sudo apt-get install git && sudo apt-get install gitk
-```
-
-3. Compiler suite
-```bash
-$ sudo apt-get install build-essential
-```
-The previous instruction installs the GNU C Compiler suite (GCC) and make.
-
-4. Virtual machine emulator
-```bash
+$ sudo apt-get install gcc
+$ sudo apt-get install make
+# sudo apt-get install gdb
+$ sudo apt-get install git
+$ sudo apt-get install gitk
 $ sudo apt-get install qemu
 ```
-Qemu is a software that emulates different processors from the most common (x86, arm) to the most esoteric. It is the most used machine emulator and is currently under heavy development. The above instruction installs the whole suite of emulator.
+It is pretty obvious from the commands what utilities are installed. If you don't know yet about any of those please inform yourself. Additionally an editor is needed but none is enforced.
+ 
 
 ## XWindow on Windows
 Cygwin/X11 doesn't work on win32. To make graphical cygwin application run I have installed a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
