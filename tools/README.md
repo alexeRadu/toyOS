@@ -25,8 +25,12 @@ $ export DISPLAY=:0.0
 
 You should place this variable in bashrc so that you won't type it everytime you start bash.
 
-## GDB frontend
-GDB is a powerfull debugger that integrates well with simulators. It's drawback is the lack of a powerful interface that would ease debugging. The variant that I am testing right now is a better command line interface. It does not need additional add-ons and is implemented through the use of a .gdbinit file. It can be downloaded from https://github.com/cyrus-and/gdb-dashboard.git.
+## GDB
+GDB is a powerfull debugger that integrates well with simulators. It's drawback is the lack of a powerful interface that would ease debugging. The variant that I am testing right now is a better command line interface. It does not need additional add-ons and is implemented through the use of a .gdbinit file. It can be downloaded from https://github.com/cyrus-and/gdb-dashboard.git. A variant has been included in the tools directory. To use it just copy it in the home directory.
+
+```bash
+$ cp tools/.gdbinit ~
+```
 
 ## Test Images
 To test the setup there are several images provided by the qemu team. You can find them at:
