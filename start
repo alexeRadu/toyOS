@@ -1,0 +1,7 @@
+#!/bin/bash
+
+img_dir=images/minix204
+QEMU=qemu-system-x86_64
+
+${QEMU} -m 8M -fda ${img_dir}/vfloppya.img -hda ${img_dir}/minix204.img -boot c -S -s &
+gdb --init-eval-command='target remote localhost:1234'
