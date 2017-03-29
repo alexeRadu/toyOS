@@ -1,15 +1,15 @@
 	BITS 16
 
 start:
-	cli
+	cli					; Disable interrupts
 
-	mov ax, 0x07c0
+	mov ax, 0x07c0				; Set data segment to be the same as text segment
 	mov ds, ax
 
-	mov si, message
-	call pr_str
+	mov si, message				; This way ds:si will point to message
+	call pr_str				; Print message to screen
 
-	jmp $			; infinite loop
+	jmp $					; Catch the CPI in an infinite loop
 
 	message db 'ToyOS - the new operating system from Alexe Radu', 0
 
@@ -26,6 +26,5 @@ pr_str:
 .done:
 	ret
 
-	times 510 - ($ - $$) db 0
-	db 0x55
-	db 0xAA
+	times 510 - ($ - $$) db 0		; Pad remainder of boot sector with 0s
+	dw 0xAA55				; The standard PC boot signature
