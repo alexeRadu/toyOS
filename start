@@ -9,4 +9,8 @@ dbg_opt='-S -s'
 #gdb --init-eval-command='target remote localhost:1234'
 
 ${QEMU} -fda boot.flp ${dbg_opt} &
-gdb -ex 'target remote localhost:1234' -ex 'add-symbol-file boot.elf 0x7c00' -ex 'break *0x7c00'
+
+gdb  \
+    -ex 'target remote localhost:1234' \
+    -ex 'add-symbol-file boot.elf 0x7c00' \
+    -ex 'break *0x7c00'
