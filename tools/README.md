@@ -17,14 +17,28 @@ $ sudo apt-get install qemu
 It is pretty obvious from the commands what utilities are installed. If you don't know yet about any of those please inform yourself. Additionally an editor is needed but none is enforced.
  
 
-## XWindow on Windows
-Cygwin/X11 doesn't work on win32. To make graphical cygwin application run I have installed a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
+## On Windows
+There are a few additional dependecies that have to be installed. First you need to install VirtualBox and Vagrant. Their installation is pretty straight forward and simple. This will enable you to run your application on Linux inside the VM but do the work (edit files, commit changes) in windows.
+To make graphical applications from the VM (like QEmu or gitk) appear on Windows install a X11 server called Xming. You can download Xming from https://sourceforge.net/projects/xming/. After installing it set your display address to :0.0 and on cygwin console write:
 
 ```bash
 $ export DISPLAY=:0.0
 ```
 
 You should place this variable in bashrc so that you won't type it everytime you start bash.
+After installing every dependency run start the VM by running the following command in the base toyOS directory.
+
+```bash
+$ vagrant up
+```
+
+This will create a VM instance if run for the first time and then install the distro mentioned in Vagrantfile inside the VM instance. To connect to the VM run:
+
+```bash
+$ vagrant ssh
+```
+
+When inside the VM for the first time perform the installation of the basic Linux prerequisites mentioned in the previous chapter.
 
 ## GDB
 GDB is a powerfull debugger that integrates well with simulators. It's drawback is the lack of a powerful interface that would ease debugging. The variant that I am testing right now is a better command line interface. It does not need additional add-ons and is implemented through the use of a .gdbinit file. It can be downloaded from https://github.com/cyrus-and/gdb-dashboard.git. A variant has been included in the tools directory. To use it just copy it in the home directory.
