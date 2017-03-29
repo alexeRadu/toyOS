@@ -7,24 +7,28 @@ start:
 	mov ds, ax
 
 	mov si, message				; This way ds:si will point to message
-	call pr_str				; Print message to screen
+	call print				; Print message to screen
 
 	jmp $					; Catch the CPI in an infinite loop
 
 	message db 'ToyOS - the new operating system from Alexe Radu', 0
 
-pr_str:
-	mov ah, 0Eh
+; print a string to console
+; si	- [in] string to be printed
+print:
+	pusha					; Save registers to be used
+	mov ah, 0x0e				; int 10h 'print char' function
 
-.repeat:
-	lodsb
+.print_loop:
+	lodsb					; Get character from string
 	cmp al, 0
-	je .done
-	int 10h
-	jmp .repeat
+	je .print_end				; If char is 0, end of string
+	int 0x10				; Otherwise print it
+	jmp .print_loop
 
-.done:
-	ret
+.print_end:
+	popa					; Restore contents of registers
+	ret					; Return from print
 
 	times 510 - ($ - $$) db 0		; Pad remainder of boot sector with 0s
 	dw 0xAA55				; The standard PC boot signature
