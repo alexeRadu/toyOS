@@ -2,8 +2,11 @@
 
 img_dir=images/minix204
 QEMU=qemu-system-x86_64
+dbg_opt='-S -s'
 
-#${QEMU} -m 8M -fda ${img_dir}/vfloppya.img -hda ${img_dir}/minix204.img -boot c -S -s &
+#${QEMU} -m 8M -fda ${img_dir}/vfloppya.img -hda ${img_dir}/minix204.img -boot a -S -s
+#${QEMU} -m 8M -hda ${img_dir}/minix204.img -boot c
 #gdb --init-eval-command='target remote localhost:1234'
 
-${QEMU} -fda boot.flp
+${QEMU} -fda boot.flp ${dbg_opt} &
+gdb -ex 'target remote localhost:1234' -ex 'add-symbol-file boot.elf 0x7c00' -ex 'break *0x7c00'
