@@ -7,6 +7,7 @@ There are a few prerequisites you need to install:
 
 ```bash
 $ sudo apt-get install gcc
+$ sudo apt-get install nasm
 $ sudo apt-get install make
 $ sudo apt-get install gdb
 $ sudo apt-get install git
