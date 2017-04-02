@@ -17,7 +17,7 @@ start:
 
 	jmp $					; Catch the CPI in an infinite loop
 
-	message db 'ToyOS - the new operating system from Alexe Radu', 0
+	message db 'Starting Operating System', 0x0a, 0x0d, 0
 
 ; print a string to console
 ; si	- [in] string to be printed
