@@ -3,24 +3,29 @@
 start:
 	cli					; Disable interrupts
 
-	mov ax, 0x07c0				; Set data segment to be the same as text segment
-	mov ds, ax
-	mov es, ax				; Set extra segment
+	mov ax, 0x07c0				; Set data segment to point to the current
+	mov ds, ax				; sector; this is usefull for pointers to
+						; string message that are stored in si:ds
 
-	add ax, 0x400				; Leave two sectors empty
-	mov ss, ax				; Set stack segment to start at exactly after boot sector
-	mov sp, 0x1000				; Stack is 4 KB
+	mov ax, 0x0a00				; The stach should start at 0xa000 and should
+	mov ss, ax				; have a size of 1KB
+	mov bp, 0x0000
+	mov sp, 0x0400
 
 	call cls				; clear the screen
 
 	mov si, message				; This way ds:si will point to message
 	call print				; Print message to screen
 
-	mov al, 0x01				; copy one sector
+	mov ax, 0x07c0				; copy additional sectors after the boot sector
+	mov es, ax				; es points to the same data segment
+	mov bx, 0x200				; bx points after boot sector
+
+	mov al, [kern_sect_count]
 	mov ch, 0x00				; cylinder 0
 	mov dh, 0x00				; head 0
 	mov cl, 0x02				; sector 1 (after the boot sector)
-	mov bx, 0x200				; copy in memory just after the first sector
+
 	call load_sect
 
 	cmp ah, 0
@@ -89,18 +94,18 @@ load_sect:
 	mov dl, 0x00				; floppy 0
 	int 0x13
 
-	mov [_load_sect_ret], ah
+	mov [_load_sect_ret], ah		; save return value - it will be use to test for errors
 	popa
-	mov ah, [_load_sect_ret]
+	mov ah, [_load_sect_ret]		; restore return value
 	ret
 
 	_load_sect_ret db 0
 
 ; Global definitions
 	message db 'Starting Operating System', 0x0a, 0x0d, 0
-	err_sect_load_msg db 'Error loading sector', 0x0a, 0x0d, 0
-	sect_load_msg db 'Sector successfully loaded', 0x0a, 0x0d, 0
-
+	err_sect_load_msg db 'Error loading sector(s)', 0x0a, 0x0d, 0
+	sect_load_msg db 'Sector(s) successfully loaded', 0x0a, 0x0d, 0
+	kern_sect_count db 2
 
 
 ; End of the files
@@ -108,4 +113,4 @@ load_sect:
 	dw 0xAA55				; The standard PC boot signature
 
 ; Padd with 0xff another sector
-	times 512 db 0xfe
+	times 1024 db 0xfe
