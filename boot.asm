@@ -1,5 +1,4 @@
-	BITS 16
-
+	bits 16
 start:
 	cli					; Disable interrupts
 
@@ -16,6 +15,43 @@ start:
 
 	mov si, message				; This way ds:si will point to message
 	call print				; Print message to screen
+
+	; switch to big unreal mode to be able to copy the additional kernel sectors to
+	; a location in memory above the 1MB limit
+sw_unreal:
+	push ds
+
+	lgdt [gdt_descriptor]
+
+	mov eax, cr0
+	or al, 1
+	mov cr0, eax
+
+	jmp $+2
+
+	bits 32
+
+	mov bx, 0x08
+	mov ds, bx
+
+	and al, 0xfe
+	mov cr0, eax
+
+	bits 16
+
+	pop ds
+
+	mov bx, 0x0f01
+	mov eax, 0x00200000
+	mov word [ds:eax], bx
+	add eax, 2
+	mov word [ds:eax], bx
+	add eax, 2
+	mov word [ds:eax], bx
+	add eax, 2
+	mov word [ds:eax], bx
+	add eax, 2
+	mov word [ds:eax], bx
 
 	mov ax, 0x07c0				; copy additional sectors after the boot sector
 	mov es, ax				; es points to the same data segment
