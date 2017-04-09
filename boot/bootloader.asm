@@ -24,7 +24,10 @@ start:
 	mov bp, 0x0000
 	mov sp, 0x0400
 
-	call cls				; clear the screen
+	; The screen may contain some printed information (maybe from BIOS).
+	; Before moving forward we clear the screen to allow fresh messages
+	; to appear on the screen in an orderly fashion.
+	call cls
 
 	; Print welcome message.
 	; The welcome message is stored in the variable "welcome_msg". The
@@ -118,45 +121,6 @@ sw_unreal:
 loop:
 	jmp $					; Catch the CPI in an infinite loop
 
-; print a string to console
-; si	- [in] string to be printed
-print:
-	pusha					; Save registers to be used
-	mov ah, 0x0e				; int 10h 'print char' function
-
-.print_loop:
-	lodsb					; Get character from string
-	cmp al, 0
-	je .print_end				; If char is 0, end of string
-	int 0x10				; Otherwise print it
-	jmp .print_loop
-
-.print_end:
-	popa					; Restore contents of registers
-	ret					; Return from print
-
-; clear screen
-cls:
-	pusha
-
-	mov ah, 0x06				; select scroll up page
-	mov al, 0x00				; clear entire window
-	mov bh, 0x0f				; white on black background
-	mov ch, 0x00				;
-	mov cl, 0x00				; start at (0, 0) = top left
-	mov dh, 25				;
-	mov dl, 80				; end at (40, 25) = bottom right
-	int 10h
-
-	mov ah, 0x02				; set cursor position
-	mov dh, 0x00
-	mov dl, 0x00				; at (0, 0)
-	mov bh, 0x00				; use page 0
-	int 0x10
-
-	popa
-	ret
-
 ; Load sector(s) to memory
 ; al - number of sectors
 ; ch - cylinder number (0..79)
@@ -215,6 +179,9 @@ gdt_end:
 gdt_descriptor:
 	dw gdt_end - gdt_start - 1		; the size of the GDT (2 bytes)
 	dd gdt_start				; start of the GDT (4 bytes)
+
+
+	%include "screen.asm"
 
 ; Global definitions
 	welcome_msg db 'Starting Operating System', 0x0a, 0x0d, 0
