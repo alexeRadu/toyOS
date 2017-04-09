@@ -1,6 +1,15 @@
+	; This is code is part of the boot sector that is going to be loaded
+	; at address 0x7c00. This is the first code that the CPU will run after
+	; BIOS when it is still in 16 bit real-mode. Therefore the compiler
+	; needs to know that all the instructions are 16 bits wide.
 	bits 16
+
+	; This is the start of the bootloader; it is the point of entry for the
+	; bootloader.
 start:
-	cli					; Disable interrupts
+	; Before we do anything else we disable (or clear) the interrupts. We
+	; enable them after the new interrupt table (IDT) is set.
+	cli
 
 	mov ax, 0x07c0				; Set data segment to point to the current
 	mov ds, ax				; sector; this is usefull for pointers to
