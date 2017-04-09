@@ -11,10 +11,6 @@ start:
 	; enable them after the new interrupt table (IDT) is set.
 	cli
 
-	mov ax, 0x07c0				; Set data segment to point to the current
-	mov ds, ax				; sector; this is usefull for pointers to
-						; string message that are stored in si:ds
-
 	; We setup the stack: it ends at 0xa000 and has a size of 1KB. The way
 	; we code it is to set the stack segment (ss) at the bottom limit and
 	; the base pointer (bp) to zero. Then the stack pointer is set up to
@@ -30,8 +26,27 @@ start:
 
 	call cls				; clear the screen
 
-	mov si, message				; This way ds:si will point to message
-	call print				; Print message to screen
+	; Print welcome message.
+	; The welcome message is stored in the variable "welcome_msg". The
+	; address of this variable is computed by the compiler as being relative
+	; to the start of the files (which is address 0x0000). When this code is
+	; loaded into memory the "welcome_msg" will be placed relative to the
+	; start of the boot sector, which is 0x7c00 and any access of the
+	; address [welcome_msg] will yeald an incorrect value. To solve this
+	; usually one can include the directive "org 0x7c00" at the beginning
+	; at the file. This isn't possible here because the NASM compiler
+	; that accept it unless for binary output. We want ELF output because
+	; we want to use it for debugging.
+
+	; Our solution consists of setting the data segment to 0x07c0 which will
+	; generate the address 0x07c0:[welcome_msg] for the welcome_msg string.
+	mov ax, 0x07c0
+	mov ds, ax
+
+	; The print routing accepts the string to be printed in the ds:si
+	; registers.
+	mov si, welcome_msg
+	call print
 
 	; switch to big unreal mode to be able to copy the additional kernel sectors to
 	; a location in memory above the 1MB limit
@@ -202,7 +217,7 @@ gdt_descriptor:
 	dd gdt_start				; start of the GDT (4 bytes)
 
 ; Global definitions
-	message db 'Starting Operating System', 0x0a, 0x0d, 0
+	welcome_msg db 'Starting Operating System', 0x0a, 0x0d, 0
 	err_sect_load_msg db 'Error loading sector(s)', 0x0a, 0x0d, 0
 	sect_load_msg db 'Sector(s) successfully loaded', 0x0a, 0x0d, 0
 	kern_sect_count db 2
