@@ -8,9 +8,10 @@ dbg_opt='-S -s'
 #${QEMU} -m 8M -hda ${img_dir}/minix204.img -boot c
 #gdb --init-eval-command='target remote localhost:1234'
 
-${QEMU} -fda boot.flp ${dbg_opt} &
+${QEMU} -fda boot/bootloader.bin ${dbg_opt} &
 
 gdb  \
     -ex 'target remote localhost:1234' \
-    -ex 'add-symbol-file boot.elf 0x7c00' \
-    -ex 'break *0x7c00'
+    -ex 'dir boot' \
+    -ex 'add-symbol-file boot/bootloader.elf 0x7c00' \
+    -ex 'break start'
