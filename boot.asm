@@ -15,8 +15,16 @@ start:
 	mov ds, ax				; sector; this is usefull for pointers to
 						; string message that are stored in si:ds
 
-	mov ax, 0x0a00				; The stach should start at 0xa000 and should
-	mov ss, ax				; have a size of 1KB
+	; We setup the stack: it ends at 0xa000 and has a size of 1KB. The way
+	; we code it is to set the stack segment (ss) at the bottom limit and
+	; the base pointer (bp) to zero. Then the stack pointer is set up to
+	; have the value of the size of the stack, in our case 1KB. This
+	; approach creates clarity and offers the posibility to quickly change
+	; the stack parameters by changing only one parameter at a time:
+	; - the start memory location: whe change only ss
+	; - the size of the stack: we change the stack pointer
+	mov ax, 0x0a00
+	mov ss, ax
 	mov bp, 0x0000
 	mov sp, 0x0400
 
