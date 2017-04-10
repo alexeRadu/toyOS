@@ -96,8 +96,9 @@ sw_unreal:
 	mov ch, 0x00				; cylinder 0
 	mov dh, 0x00				; head 0
 	mov cl, 0x02				; sector 1 (after the boot sector)
+	mov dl, 0x00				; select floppy 0
 
-	call load_sect
+	call read_disk
 
 	cmp ah, 0
 	jne .err_sect_load
@@ -120,27 +121,6 @@ sw_unreal:
 
 loop:
 	jmp $					; Catch the CPI in an infinite loop
-
-; Load sector(s) to memory
-; al - number of sectors
-; ch - cylinder number (0..79)
-; cl - sector number (1..18)
-; dh - head number (0..1)
-; es:bx - data buffer
-; return ah - 0 if successfull
-load_sect:
-	pusha
-
-	mov ah, 0x02				; read disk sector to memory interrupt
-	mov dl, 0x00				; floppy 0
-	int 0x13
-
-	mov [_load_sect_ret], ah		; save return value - it will be use to test for errors
-	popa
-	mov ah, [_load_sect_ret]		; restore return value
-	ret
-
-	_load_sect_ret db 0
 
 ; GDT - Global Descriptor Table
 ; It described the basic flat model: 2 segments (one for code, one for data)
@@ -180,8 +160,8 @@ gdt_descriptor:
 	dw gdt_end - gdt_start - 1		; the size of the GDT (2 bytes)
 	dd gdt_start				; start of the GDT (4 bytes)
 
-
 	%include "screen.asm"
+	%include "disk.asm"
 
 ; Global definitions
 	welcome_msg db 'Starting Operating System', 0x0a, 0x0d, 0
