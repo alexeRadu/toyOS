@@ -51,30 +51,15 @@ start:
 	mov si, welcome_msg
 	call print
 
-	; switch to big unreal mode to be able to copy the additional kernel sectors to
-	; a location in memory above the 1MB limit
-sw_unreal:
-	push ds
+	; We need to load the kernel into memory above the limit of 1 MB which
+	; is not possible while in real mode. One solution would be to read one
+	; sector, switch to protected mode and copy it to the final destination
+	; and repeat the process for all the other sectors. This is difficult
+	; and it may lead to code that extends beyond the first sector. Instead
+	; we have opted to switch to the "bit unreal mode" that enables to write
+	; 16 bit code but access the whole memory.
+	call switch_to_umode
 
-	lgdt [gdt_descriptor]
-
-	mov eax, cr0
-	or al, 1
-	mov cr0, eax
-
-	jmp $+2
-
-	bits 32
-
-	mov bx, 0x08
-	mov ds, bx
-
-	and al, 0xfe
-	mov cr0, eax
-
-	bits 16
-
-	pop ds
 
 	mov bx, 0x0f01
 	mov eax, 0x00200000
@@ -104,64 +89,21 @@ sw_unreal:
 	jne .err_sect_load
 	mov si, sect_load_msg
 	call print
-	jmp .set_gdt
+
+	jmp infinite_loop
 
 .err_sect_load:
 	mov si, err_sect_load_msg
 	call print
 
-.set_gdt:
-	lgdt [gdt_descriptor]
+infinite_loop:
+	; Catch the CPU in an infinite loop
+	jmp $
 
-	mov eax, cr0				; To make the switch to protected mode, we set
-	or eax, 0x01				; the first bit of CR0, a control register
-	mov cr0, eax				; Update the control register
-
-	jmp loop
-
-loop:
-	jmp $					; Catch the CPI in an infinite loop
-
-; GDT - Global Descriptor Table
-; It described the basic flat model: 2 segments (one for code, one for data)
-; overlapped and spanning the whole 4GB of memory
-gdt_start:
-
-gdt_null:					; the mandatory null descriptor
-	dd 0x0					; the first null double-word (dd)
-	dd 0x0					; the second null double-word
-
-gdt_code:					; the code segment descriptor
-	; base = 0x00, limit = 0xfffff
-	; 1st flags: (present) 1 (privilege)00 (descriptor type) 1 -> 1001b (0x9)
-	; type flags: (code)1 (conforming)0 (readable)1 (accessed)0 -> 1010b (0xa)
-	; 2nd flags: (granularity)1 (32-bit default)1 (64-bit seg)0 (AVL)0 -> 1100b (0xc)
-	dw 0xffff		; Limit (bits 0-15)
-	dw 0x00			; Base (bits 0-15)
-	db 0x00			; Base (bits 16-23)
-	db 0x9a			; 1st flags, type flags
-	db 0xcf			; 2nd flags, Limit (bits 16-19)
-	db 0x00			; Base (bits 24-31)
-
-gdt_data:					; the data segment descriptor
-	; Same as code except for the type flags:
-	; type flags: (code)0 (expand down)0 (writable)1 (accessed)0 -> 0010b (0x2)
-	dw 0xffff		; Limit (bits 0-15)
-	dw 0x00			; Base (bits 0-15)
-	db 0x00			; Base (bits 16-23)
-	db 0x92			; 1st flags, type flags
-	db 0xcf			; 2nd flags, Limit (bits 16-19)
-	db 0x00			; Base (bits 24-31)
-
-gdt_end:
-
-; GDT descriptor
-gdt_descriptor:
-	dw gdt_end - gdt_start - 1		; the size of the GDT (2 bytes)
-	dd gdt_start				; start of the GDT (4 bytes)
 
 	%include "screen.asm"
 	%include "disk.asm"
+	%include "modes.asm"
 
 ; Global definitions
 	welcome_msg db 'Starting Operating System', 0x0a, 0x0d, 0
