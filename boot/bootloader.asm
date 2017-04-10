@@ -73,27 +73,56 @@ start:
 	add eax, 2
 	mov word [ds:eax], bx
 
-	mov ax, 0x07c0				; copy additional sectors after the boot sector
-	mov es, ax				; es points to the same data segment
-	mov bx, 0x200				; bx points after boot sector
+	; Setup the buffer that will contain the data read from disk. This will
+	; be located after the boot sector and it will be 1 sector long.
+	mov ax, 0x07c0
+	mov es, ax
+	mov bx, 0x200
 
-	mov al, [kern_sect_count]
-	mov ch, 0x00				; cylinder 0
-	mov dh, 0x00				; head 0
-	mov cl, 0x02				; sector 1 (after the boot sector)
-	mov dl, 0x00				; select floppy 0
+	; Initial setup of parameters.
+	; Read 1 sector starting from CHS (0, 0, 1).
+	mov al, 1
+	mov ch, 0x00
+	mov dh, 0x00
+	mov cl, 0x02
 
+	; Read from disk 0 = floppy.
+	mov dl, 0x00
+
+read_sector:
+	; Read disk sector.
 	call read_disk
 
-	cmp ah, 0
-	jne .err_sect_load
-	mov si, sect_load_msg
+	; If return value (ah) is not zero then an error has happened. Print
+	; error message and exit.
+	cmp ah, 0x00
+	jne kernel_load_err
+
+	; If no error copy sector to kernel memory location.
+	; TODO: memcpy
+
+	; Update kernel sector count variable. If zero exit loading kernel.
+	mov al, [kern_sect_count]
+	dec al
+	cmp al, 0x00
+	je kernel_load_ok
+	mov [kern_sect_count], al
+
+	; Update CHS for the next sector.
+	; TODO: implement update_chs function
+	mov al, 1
+	mov ch, 0x00
+	mov dh, 0x00
+	mov cl, 0x03
+
+	jmp kernel_load_ok
+
+kernel_load_err:
+	mov si, kern_load_err_msg
 	call print
 
-	jmp infinite_loop
-
-.err_sect_load:
-	mov si, err_sect_load_msg
+kernel_load_ok:
+	mov si, kern_load_msg
 	call print
 
 infinite_loop:
@@ -105,10 +134,11 @@ infinite_loop:
 	%include "disk.asm"
 	%include "modes.asm"
 
-; Global definitions
-	welcome_msg db 'Starting Operating System', 0x0a, 0x0d, 0
-	err_sect_load_msg db 'Error loading sector(s)', 0x0a, 0x0d, 0
-	sect_load_msg db 'Sector(s) successfully loaded', 0x0a, 0x0d, 0
+	; Global definitions
+	welcome_msg 	   	db 'Starting Operating System', 0x0a, 0x0d, 0
+	kern_load_err_msg  	db 'Error loading kernel', 0x0a, 0x0d, 0
+	kern_load_msg 		db 'Kernel loaded', 0x0a, 0x0d, 0
+
 	kern_sect_count db 2
 
 
