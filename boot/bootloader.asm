@@ -93,12 +93,17 @@ read_sector:
 	cmp ah, 0x00
 	jne kernel_load_err
 
+	; save CHS parameters
+	push cx
+	push dx
+
 	; If no error copy sector to kernel memory location.
 	mov esi, 0x00007e00
 	mov edi, [0x7c00 + kern_load_addr]
-
-	mov cx, 0x10
+	mov cx, 0x200
 	call memcpy
+	add edi, 0x200
+	mov [0x7c00 + kern_load_addr], edi
 
 	; Update kernel sector count variable. If zero exit loading kernel.
 	mov al, [0x7c00 + kern_sect_count]
@@ -110,11 +115,11 @@ read_sector:
 	; Update CHS for the next sector.
 	; TODO: implement update_chs function
 	mov al, 1
-	mov ch, 0x00
-	mov dh, 0x00
-	mov cl, 0x03
+	pop dx
+	pop cx
+	call update_chs
 
-	jmp kernel_load_ok
+	jmp read_sector
 
 kernel_load_err:
 	mov si, kern_load_err_msg
@@ -150,4 +155,5 @@ infinite_loop:
 	dw 0xAA55				; The standard PC boot signature
 
 ; Padd with 0xff another sector
-	times 1024 db 0xfe
+	times 512 db 0xfe
+	times 512 db 0xae

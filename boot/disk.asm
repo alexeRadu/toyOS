@@ -30,3 +30,41 @@ read_disk:
 	; pop them at the end because almost all the registers are used. Those
 	; overriden by the interrupt should be returned as is.
 	ret
+
+
+; ------------------------------------------------------------------------------
+; Function: 	update_chs
+; Description:	Update CHS (cylinder, head, sector) number by a number of
+;	sectors
+; @param ch	cylinder number (0..79)
+; @param dh	head number (0..1)
+; @param cl	sector number (1..18)
+; @param al	number of sectors to incremeant CHS by
+; @return ch	the updated cylinder number
+;	  dh	the updated head number
+;	  cl	the updated sector number
+; ------------------------------------------------------------------------------
+
+update_chs:
+	push ax
+
+ .chs_start:
+	cmp al, 0x0000
+	je .chs_end
+	dec al
+
+	inc cl
+	cmp cl, 19
+	jne .chs_start
+	mov cl, 1
+
+	inc dh
+	cmp dh, 2
+	jne .chs_start
+	mov dh, 0
+
+	inc ch
+
+ .chs_end:
+ 	pop ax
+	ret
