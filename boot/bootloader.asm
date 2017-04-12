@@ -60,19 +60,6 @@ start:
 	; 16 bit code but access the whole memory.
 	call switch_to_umode
 
-
-	mov bx, 0x0f01
-	mov eax, 0x00200000
-	mov word [ds:eax], bx
-	add eax, 2
-	mov word [ds:eax], bx
-	add eax, 2
-	mov word [ds:eax], bx
-	add eax, 2
-	mov word [ds:eax], bx
-	add eax, 2
-	mov word [ds:eax], bx
-
 	; Setup the buffer that will contain the data read from disk. This will
 	; be located after the boot sector and it will be 1 sector long.
 	mov ax, 0x07c0
@@ -99,7 +86,23 @@ read_sector:
 	jne kernel_load_err
 
 	; If no error copy sector to kernel memory location.
-	; TODO: memcpy
+	mov esi, 0x00007e00
+	mov edi, [kern_load_addr]
+
+	; Save to stack old ds and es
+	push ds
+
+
+	; Reset them to zero so that we may access all the space
+	mov ax, 0x00
+	mov ds, ax
+	mov es, ax
+
+	mov cx, 0x10
+	call memcpy
+
+	; Restore ds
+	pop ds
 
 	; Update kernel sector count variable. If zero exit loading kernel.
 	mov al, [kern_sect_count]
@@ -133,6 +136,7 @@ infinite_loop:
 	%include "screen.asm"
 	%include "disk.asm"
 	%include "modes.asm"
+	%include "memory.asm"
 
 	; Global definitions
 	welcome_msg 	   	db 'Starting Operating System', 0x0a, 0x0d, 0
@@ -140,6 +144,7 @@ infinite_loop:
 	kern_load_msg 		db 'Kernel loaded', 0x0a, 0x0d, 0
 
 	kern_sect_count db 2
+	kern_load_addr	dd 0x00200000
 
 
 ; End of the files
