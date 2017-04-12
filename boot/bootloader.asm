@@ -41,14 +41,19 @@ start:
 	; that accept it unless for binary output. We want ELF output because
 	; we want to use it for debugging.
 
-	; Our solution consists of setting the data segment to 0x07c0 which will
-	; generate the address 0x07c0:[welcome_msg] for the welcome_msg string.
-	mov ax, 0x07c0
+	; Our solution consists of setting the data segment to 0x0000 and add
+	; the offset 0f 0x7c00 to si to get the actual address of the string.
+	; This will eliminate extra steps required for saving and restoring
+	; the data segment when it should be changed for memcpy. Additionally
+	; es is set to 0x0000 as well.
+	mov ax, 0x0000
 	mov ds, ax
+	mov es, ax
 
 	; The print routing accepts the string to be printed in the ds:si
 	; registers.
 	mov si, welcome_msg
+	add si, 0x7c00
 	call print
 
 	; We need to load the kernel into memory above the limit of 1 MB which
@@ -60,11 +65,14 @@ start:
 	; 16 bit code but access the whole memory.
 	call switch_to_umode
 
+	mov ax, 0x7c00
+	mov ds, ax
+	mov ax, 0x0000
+	mov ds, ax
+
 	; Setup the buffer that will contain the data read from disk. This will
 	; be located after the boot sector and it will be 1 sector long.
-	mov ax, 0x07c0
-	mov es, ax
-	mov bx, 0x200
+	mov bx, 0x7e00
 
 	; Initial setup of parameters.
 	; Read 1 sector starting from CHS (0, 0, 1).
@@ -87,29 +95,17 @@ read_sector:
 
 	; If no error copy sector to kernel memory location.
 	mov esi, 0x00007e00
-	mov edi, [kern_load_addr]
-
-	; Save to stack old ds and es
-	push ds
-
-
-	; Reset them to zero so that we may access all the space
-	mov ax, 0x00
-	mov ds, ax
-	mov es, ax
+	mov edi, [0x7c00 + kern_load_addr]
 
 	mov cx, 0x10
 	call memcpy
 
-	; Restore ds
-	pop ds
-
 	; Update kernel sector count variable. If zero exit loading kernel.
-	mov al, [kern_sect_count]
+	mov al, [0x7c00 + kern_sect_count]
 	dec al
 	cmp al, 0x00
 	je kernel_load_ok
-	mov [kern_sect_count], al
+	mov [0x7c00 + kern_sect_count], al
 
 	; Update CHS for the next sector.
 	; TODO: implement update_chs function
@@ -122,10 +118,12 @@ read_sector:
 
 kernel_load_err:
 	mov si, kern_load_err_msg
+	add si, 0x7c00
 	call print
 
 kernel_load_ok:
 	mov si, kern_load_msg
+	add si, 0x7c00
 	call print
 
 infinite_loop:
