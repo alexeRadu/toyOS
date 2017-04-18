@@ -58,11 +58,15 @@ start:
 
 	; We need to load the kernel into memory above the limit of 1 MB which
 	; is not possible while in real mode. One solution would be to read one
-	; sector, switch to protected mode and copy it to the final destination
-	; and repeat the process for all the other sectors. This is difficult
-	; and it may lead to code that extends beyond the first sector. Instead
-	; we have opted to switch to the "bit unreal mode" that enables to write
-	; 16 bit code but access the whole memory.
+	; sector, switch to protected mode, copy it to the final destination,
+	; switch back to real mode and repeat the process for all the other
+	; sectors. There are two problems with this approach:
+	;	1. it is difficult to implement / understand
+	;	2. it may lead to longer code that may extend beyond the first
+	; sector of code that we have available. Instead we have opted to switch
+	; to the "bit unreal mode" that enables code in 16 bitmode but at the
+	; same time pointers on 32 bits, which enables access to the whole 4 GB
+	; of memory ram.
 	call switch_to_umode
 
 	mov ax, 0x7c00
