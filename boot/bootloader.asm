@@ -140,6 +140,10 @@ kernel_load_ok:
 	mov si, kern_load_msg + 0x7c00
 	call print
 
+load_gdt:
+	mov ebx, [kern_load_addr + 0x7c00]
+	jmp switch_to_pmode
+
 infinite_loop:
 	; Catch the CPU in an infinite loop
 	jmp $
@@ -155,7 +159,7 @@ infinite_loop:
 	kern_load_err_msg  	db 'Error loading kernel', 0x0a, 0x0d, 0
 	kern_load_msg 		db 'Kernel loaded', 0x0a, 0x0d, 0
 
-	kern_sect_count dw 2
+	kern_sect_count dw 1
 	kern_load_addr	dd 0x00200000
 	kern_sect_addr	dd 0x00007e00
 
@@ -163,7 +167,3 @@ infinite_loop:
 ; End of the files
 	times 510 - ($ - $$) db 0		; Pad remainder of boot sector with 0s
 	dw 0xAA55				; The standard PC boot signature
-
-; Padd with 0xff another sector
-	times 512 db 0xfe
-	times 512 db 0xae

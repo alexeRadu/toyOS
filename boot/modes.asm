@@ -80,7 +80,7 @@ switch_to_pmode:
 
 	; This instruction forces the CPU to flush its cache of pre-fetched and
 	; real mode decoded instructions which can cause problems.
-	jmp $ + 2
+	jmp ebx
 
 
 ; ------------------------------------------------------------------------------

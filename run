@@ -8,7 +8,7 @@ dbg_opt='-S -s'
 #${QEMU} -m 8M -hda ${img_dir}/minix204.img -boot c
 #gdb --init-eval-command='target remote localhost:1234'
 
-${QEMU} -fda boot/bootloader.bin ${dbg_opt} &
+${QEMU} -fda disk.bin ${dbg_opt} &
 
 gdb  \
     -ex 'target remote localhost:1234' \
@@ -19,5 +19,13 @@ gdb  \
     -ex 'break *0x7cda' \
     -ex 'break *0x7c1f' \
     -ex 'break *0x7c2c' \
+    -ex 'break *0x7c31' \
+    -ex 'break *0x7c39' \
+    -ex 'break *0x7c44' \
+    -ex 'break *0x7c68' \
     -ex 'dashboard memory watch 0x7e00 0x20' \
-    -ex 'dashboard memory watch 0x00200000 0x80'
+    -ex 'dashboard memory watch 0x00200000 0x20' \
+    -ex 'dashboard memory watch 0x00200200 0x20' \
+    -ex 'dir kernel' \
+    -ex 'add-symbol-file kernel/kernel.elf 0x00200000' \
+    -ex 'break *0x00200000'
