@@ -69,11 +69,6 @@ start:
 	; of memory ram.
 	call switch_to_umode
 
-	mov ax, 0x7c00
-	mov ds, ax
-	mov ax, 0x0000
-	mov ds, ax
-
 	; Setup the buffer that will contain the data read from disk. This will
 	; be located after the boot sector and it will be 1 sector long.
 	mov bx, 0x7e00
