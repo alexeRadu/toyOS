@@ -14,4 +14,10 @@ gdb  \
     -ex 'target remote localhost:1234' \
     -ex 'dir boot' \
     -ex 'add-symbol-file boot/bootloader.elf 0x7c00' \
-    -ex 'break start'
+    -ex 'break start' \
+    -ex 'break *0x7c19' \
+    -ex 'break *0x7cda' \
+    -ex 'break *0x7c1f' \
+    -ex 'break *0x7c2c' \
+    -ex 'dashboard memory watch 0x7e00 0x20' \
+    -ex 'dashboard memory watch 0x00200000 0x80'
