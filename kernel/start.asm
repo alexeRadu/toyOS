@@ -1,14 +1,16 @@
 bits 32
 
+SECTION .text
+
 global start
+extern kmain
+
 start:
 	; Set the stack for the kernel.
 	mov esp, sys_stack
 
-	; Infinite loop.
-	jmp $
-
-	times 512 - ($ - $$) db 0
+	; Jump to kmain function.
+	call kmain
 
 ; BSS section. This is where the uninitialized data goes.
 SECTION .bss
