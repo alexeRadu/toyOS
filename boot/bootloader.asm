@@ -73,60 +73,68 @@ start:
 	; of memory ram.
 	call switch_to_umode
 
-	; Setup the buffer that will contain the data read from disk. This will
-	; be located after the boot sector and it will be 1 sector long.
-	mov bx, 0x7e00
+	; The next section is dedicated to copying the kernel to the desired
+	; memory location. Therefore we set the source and destination
+	; registers. Both contain values loaded from variables. The source
+	; represents the location in memory where the sector from disk is to
+	; be first loaded; the destination is the final kernel memory location.
+	mov esi, [kern_sect_addr + 0x7c00]
+	mov edi, [kern_load_addr + 0x7c00]
 
-	; Initial setup of parameters.
-	; Read 1 sector starting from CHS (0, 0, 1).
-	mov al, 1
-	mov ch, 0x00
-	mov dh, 0x00
-	mov cl, 0x02
-
-	; Read from disk 0 = floppy.
-	mov dl, 0x00
-
+	; Loading the kernel to the target location is an iterative process
+	; where in each step we read a sector from disk to an intermediate
+	; location, and then 'memcpy' it back to the final kernel location
+	; in memory. This is because copying a sector from disk to memory
+	; uses the BIOS interrupt which uses 16 bit addressing mode. 'Memcpy'
+	; instead can address (via unreal mode) the whole 4 GB of memory.
 read_sector:
-	; Read disk sector.
-	call read_disk
+	; Read CHS (cylinder, head, sector) number from memory. We keep these
+	; values in memory because it easier and creates a cleaner code compared
+	; to saving them on the stack.
+	call read_chs
+
+	; Read one sector from the disk to the intermmediate memory location.
+	mov bx, si
+	call read_disk_sector
 
 	; If return value (ah) is not zero then an error has happened. Print
 	; error message and exit.
 	cmp ah, 0x00
 	jne kernel_load_err
 
-	; save CHS parameters
-	push cx
-	push dx
-
-	; If no error copy sector to kernel memory location.
-	mov esi, 0x00007e00
-	mov edi, [0x7c00 + kern_load_addr]
-	mov cx, 0x200
-	call memcpy
-	add edi, 0x200
-	mov [0x7c00 + kern_load_addr], edi
-
-	; Update kernel sector count variable. If zero exit loading kernel.
-	mov al, [0x7c00 + kern_sect_count]
-	dec al
-	cmp al, 0x00
-	je kernel_load_ok
-	mov [0x7c00 + kern_sect_count], al
-
-	; Update CHS for the next sector.
-	; TODO: implement update_chs function
-	mov al, 1
-	pop dx
-	pop cx
+	; If there is no error while reading the sector update the CHS values
+	; to point to the next sector on disk. This function also saves them
+	; as variables so that next time they can be read.
 	call update_chs
 
+	; The number of segments copied is returned in al; left shifting this
+	; value by 9 mean multiplying the number of segemnts with the length of
+	; the segment (512 bytes) resulting the number of bytes to be copied.
+	; This value is passed as a parameter to memcpy (cx). After the segment
+	; is copied we update the destination pointer (edi) by the amount
+	; copied.
+	xor ecx, ecx
+	mov cl, al
+	shl cx, 0x09
+	call memcpy
+	add edi, ecx
+
+	; The last thing in this loop is to decrement the number of kernel
+	; sectors to be loaded in memory and test this value against zero.
+	mov ax, [kern_sect_count + 0x7c00]
+	dec ax
+	mov [kern_sect_count + 0x7c00], ax
+
+	; If it reached zero then continue with the rest of the bootloader.
+	; Else do another loop.
+	cmp ax, 0x00
+	je kernel_load_ok
 	jmp read_sector
 
 kernel_load_err:
 	mov si, kern_load_err_msg + 0x7c00
 	call print
+	jmp infinite_loop
 
 kernel_load_ok:
 	mov si, kern_load_msg + 0x7c00
@@ -147,8 +155,9 @@ infinite_loop:
 	kern_load_err_msg  	db 'Error loading kernel', 0x0a, 0x0d, 0
 	kern_load_msg 		db 'Kernel loaded', 0x0a, 0x0d, 0
 
-	kern_sect_count db 2
+	kern_sect_count dw 2
 	kern_load_addr	dd 0x00200000
+	kern_sect_addr	dd 0x00007e00
 
 
 ; End of the files
