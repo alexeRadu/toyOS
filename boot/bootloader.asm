@@ -42,7 +42,7 @@ start:
 	; we want to use it for debugging.
 
 	; Our solution consists of setting the data segment to 0x0000 and add
-	; the offset 0f 0x7c00 to si to get the actual address of the string.
+	; the offset of 0x7c00 to si to get the actual address of the string.
 	; This will eliminate extra steps required for saving and restoring
 	; the data segment when it should be changed for memcpy. Additionally
 	; es is set to 0x0000 as well.
