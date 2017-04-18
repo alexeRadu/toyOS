@@ -1,11 +1,11 @@
-all: kernel.bin kernel.elf
+all: kernel.bin
 
-kernel.bin: start.asm
-	nasm -f bin -o kernel.bin start.asm
+kernel.bin: start.o
+	ld -T link.ld -o kernel.bin start.o
 
-kernel.elf: start.asm
-	nasm -f elf64 -F dwarf -g -o kernel.elf start.asm
+start.o: start.asm
+	nasm -f elf64 -F dwarf -g -o start.o start.asm
 
 clean:
 	rm kernel.bin
-	rm kernel.elf
+	rm start.o
