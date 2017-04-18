@@ -51,9 +51,13 @@ start:
 	mov es, ax
 
 	; The print routing accepts the string to be printed in the ds:si
-	; registers.
-	mov si, welcome_msg
-	add si, 0x7c00
+	; registers. Here I have loaded the address of the welcoming message
+	; into the si to which I have added 0x7c00. This is because the compiler
+	; sets the address of the variable 'welcome_msg' relative to the start
+	; of the file (which is as far as the compiler is concerned at 0x0000).
+	; It does not know that this sector is going to be loaded at 0x7c00 so
+	; we add the extra address increment.
+	mov si, welcome_msg + 0x7c00
 	call print
 
 	; We need to load the kernel into memory above the limit of 1 MB which
@@ -121,13 +125,11 @@ read_sector:
 	jmp read_sector
 
 kernel_load_err:
-	mov si, kern_load_err_msg
-	add si, 0x7c00
+	mov si, kern_load_err_msg + 0x7c00
 	call print
 
 kernel_load_ok:
-	mov si, kern_load_msg
-	add si, 0x7c00
+	mov si, kern_load_msg + 0x7c00
 	call print
 
 infinite_loop:
