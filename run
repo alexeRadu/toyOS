@@ -27,5 +27,5 @@ gdb  \
     -ex 'dashboard memory watch 0x00200000 0x20' \
     -ex 'dashboard memory watch 0x00200200 0x20' \
     -ex 'dir kernel' \
-    -ex 'add-symbol-file kernel/start.o 0x00200000' \
+    -ex 'add-symbol-file kernel/kernel.o 0x00200000' \
     -ex 'break *0x00200000'
