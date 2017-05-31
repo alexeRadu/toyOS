@@ -15,7 +15,6 @@ gdb  \
     -ex 'dir boot' \
     -ex 'add-symbol-file boot/bootloader.elf 0x7c00' \
     -ex 'break start' \
-    -ex 'dashboard memory watch 0x7e00 0x20' \
     -ex 'dashboard memory watch 0x00200000 0x20' \
     -ex 'dashboard memory watch 0x00200200 0x20' \
     -ex 'dir kernel' \
