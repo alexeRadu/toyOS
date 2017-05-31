@@ -1,11 +1,11 @@
-all: bootloader.bin bootloader.elf
+all: bootloader.bin bootloader.o
 
 bootloader.bin: bootloader.asm screen.asm disk.asm modes.asm memory.asm
 	nasm -f bin -o bootloader.bin bootloader.asm
 
-bootloader.elf: bootloader.asm screen.asm disk.asm modes.asm memory.asm
-	nasm -f elf64 -F dwarf -g -o bootloader.elf bootloader.asm
+bootloader.o: bootloader.asm screen.asm disk.asm modes.asm memory.asm
+	nasm -f elf64 -F dwarf -g -o bootloader.o bootloader.asm
 
 clean:
 	rm bootloader.bin
-	rm bootloader.elf
+	rm bootloader.o
