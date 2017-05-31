@@ -26,7 +26,7 @@
 void cls()
 {
 	unsigned int i, j;
-	u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	volatile u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
 	u16 blank = (COLOR_RED << 12) | (COLOR_WHITE << 8) | 0x20;
 
 	for (i = 0; i < VGA_ROW_COUNT; i++) {
