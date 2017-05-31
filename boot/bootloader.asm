@@ -159,7 +159,7 @@ infinite_loop:
 	kern_load_err_msg  	db 'Error loading kernel', 0x0a, 0x0d, 0
 	kern_load_msg 		db 'Kernel loaded', 0x0a, 0x0d, 0
 
-	kern_sect_count dw 1
+	kern_sect_count dw 16
 	kern_load_addr	dd 0x00200000
 	kern_sect_addr	dd 0x00007e00
 
