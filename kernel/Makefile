@@ -1,4 +1,4 @@
-OPTIONS := -Wall -g -ggdb -fno-builtin -g -O -fomit-frame-pointer -finline-functions -nostdinc
+OPTIONS := -Wall -g -ggdb -fno-builtin -nostdinc
 
 all: kernel.bin kernel.o
 
