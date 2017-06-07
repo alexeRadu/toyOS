@@ -11,4 +11,4 @@ kernel/kernel.bin:
 clean:
 	$(MAKE) clean -C boot
 	$(MAKE) clean -C kernel
-	rm disk.bin
+	rm -f disk.bin

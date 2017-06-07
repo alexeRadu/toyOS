@@ -18,8 +18,8 @@ screen.o: screen.c types.h
 	gcc $(OPTIONS) -c -o screen.o screen.c
 
 clean:
-	rm kernel.bin
-	rm kernel.o
-	rm start.o
-	rm kmain.o
-	rm screen.o
+	rm -f kernel.bin
+	rm -f kernel.o
+	rm -f start.o
+	rm -f kmain.o
+	rm -f screen.o
