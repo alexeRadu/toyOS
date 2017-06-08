@@ -13,7 +13,7 @@ ${QEMU} -fda disk.bin ${dbg_opt} &
 gdb  \
     -ex 'target remote localhost:1234' \
     -ex 'dir boot' \
-    -ex 'add-symbol-file boot/bootloader.elf 0x7c00' \
+    -ex 'add-symbol-file boot/bootloader.o 0x7c00' \
     -ex 'break start' \
     -ex 'dashboard memory watch 0x00200000 0x20' \
     -ex 'dashboard memory watch 0x00200200 0x20' \
