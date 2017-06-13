@@ -1,12 +1,10 @@
 OPTIONS := -Wall -g -ggdb -fno-builtin -nostdinc
 
-all: kernel.bin kernel.o
-
-kernel.bin: start.o kmain.o screen.o
-	ld -T link.ld -o kernel.bin start.o kmain.o screen.o
+kernel.bin: kernel.o
+	objcopy -O "binary" kernel.o kernel.bin
 
 kernel.o: start.o kmain.o screen.o
-	ld -T linko.ld -g -o kernel.o start.o kmain.o screen.o
+	ld -T link.ld -g -o kernel.o start.o kmain.o screen.o
 
 start.o: start.asm
 	nasm -f elf64 -F dwarf -g -o start.o start.asm
