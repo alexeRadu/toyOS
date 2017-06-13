@@ -22,12 +22,36 @@
 #define VGA_COLUMN_COUNT	80
 #define VGA_ROW_COUNT		25	
 
+/* cursor position */
+u16 cx, cy;
+
+/*
+ * This functions should be moved to a global file.
+ * For now they stay here.
+ */
+void outb(unsigned short port, unsigned char data)
+{
+	asm volatile ("outb %1, %0" : : "dN" (port), "a" (data));
+}
+
+void goto_xy(u16 x, u16 y)
+{
+	u16 pos = y * VGA_COLUMN_COUNT + x;
+
+	outb(0x3d4, 14);
+	outb(0x3d5, pos >> 8);
+	outb(0x3d4, 15);
+	outb(0x3d5, pos);
+
+	cx = x;
+	cy = y;
+}
 
 void cls()
 {
 	unsigned int i, j;
 	volatile u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
-	u16 blank = (COLOR_RED << 12) | (COLOR_WHITE << 8) | 0x20;
+	u16 blank = (COLOR_BLACK << 12) | (COLOR_WHITE << 8) | 0x20;
 
 	for (i = 0; i < VGA_ROW_COUNT; i++) {
 		for (j = 0; j < VGA_COLUMN_COUNT; j++) {
