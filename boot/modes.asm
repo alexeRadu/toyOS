@@ -29,7 +29,7 @@ switch_to_umode:
 	pusha
 
 	; Load the GDT table.
-	lgdt [gdt_descriptor]
+	lgdt [gdt_descriptor + 0x7c00]
 
 	; Switch to protected mode by setting the pmode bit from the cr0
 	; register while making sure that the rest of the bits are left
@@ -69,7 +69,7 @@ switch_to_umode:
 
 switch_to_pmode:
 	; Load the GDT table.
-	lgdt [gdt_descriptor]
+	lgdt [gdt_descriptor + 0x7c00]
 
 	; Switch to protected mode by setting the pmode bit from the cr0
 	; register while making sure that the rest of the bits are left
@@ -80,7 +80,7 @@ switch_to_pmode:
 
 	; This instruction forces the CPU to flush its cache of pre-fetched and
 	; real mode decoded instructions which can cause problems.
-	jmp ebx
+	jmp 0x08:init_pm + 0x7c00
 
 
 ; ------------------------------------------------------------------------------
@@ -141,4 +141,4 @@ gdt_start:
 
 gdt_descriptor:
 	dw gdt_end - gdt_start - 1
-	dd gdt_start
+	dd gdt_start + 0x7c00

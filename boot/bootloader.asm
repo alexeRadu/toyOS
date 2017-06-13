@@ -141,14 +141,25 @@ kernel_load_ok:
 	call print
 
 load_gdt:
-	mov ebx, [kern_load_addr + 0x7c00]
 	jmp switch_to_pmode
+
+	bits 32
+init_pm:
+	mov ax, 0x10
+	mov ds, ax
+	mov ss, ax
+	mov es, ax
+	mov gs, ax
+	mov fs, ax
+	mov ebx, [kern_load_addr + 0x7c00]
+	jmp ebx
 
 infinite_loop:
 	; Catch the CPU in an infinite loop
 	jmp $
 
 
+	bits 16
 	%include "screen.asm"
 	%include "disk.asm"
 	%include "modes.asm"
