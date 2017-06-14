@@ -1,4 +1,5 @@
 #include "types.h"
+#include "system.h"
 
 #define VIDEO_MEMORY_BASE_ADDRESS	0x000b8000
 
@@ -24,15 +25,6 @@
 
 /* cursor position */
 u16 cx, cy;
-
-/*
- * This functions should be moved to a global file.
- * For now they stay here.
- */
-void outb(unsigned short port, unsigned char data)
-{
-	asm volatile ("outb %1, %0" : : "dN" (port), "a" (data));
-}
 
 void goto_xy(u16 x, u16 y)
 {
