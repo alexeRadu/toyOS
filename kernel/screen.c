@@ -28,7 +28,12 @@ u16 cx, cy;
 
 void goto_xy(u16 x, u16 y)
 {
-	u16 pos = y * VGA_COLUMN_COUNT + x;
+	u16 pos;
+
+	x = (x >= VGA_COLUMN_COUNT) ? VGA_COLUMN_COUNT - 1 : x;
+	y = (y >= VGA_ROW_COUNT) ? VGA_ROW_COUNT - 1 : y;
+
+	pos = y * VGA_COLUMN_COUNT + x;
 
 	outb(0x3d4, 14);
 	outb(0x3d5, pos >> 8);
