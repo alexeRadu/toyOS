@@ -25,6 +25,7 @@
 
 /* cursor position */
 u16 cx, cy;
+u16 attr = (COLOR_BLACK << 12) | (COLOR_WHITE << 8);
 
 void goto_xy(u16 x, u16 y)
 {
@@ -54,6 +55,22 @@ void cls()
 		for (j = 0; j < VGA_COLUMN_COUNT; j++) {
 			*addr = blank;
 			addr++;
+		}
+	}
+}
+
+void putch(const char c)
+{
+	volatile u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	addr += (cy * VGA_COLUMN_COUNT + cx);
+
+	switch(c) {
+	default:
+		*addr = attr | c;
+		cx += 1;
+		if (cx == VGA_COLUMN_COUNT) {
+			cx = 0;
+			cy = (cy == VGA_ROW_COUNT) ? 0 : cy + 1;
 		}
 	}
 }
