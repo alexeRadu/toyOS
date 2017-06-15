@@ -1,13 +1,13 @@
-OPTIONS := -Wall -g -ggdb -fno-builtin -nostdinc
+OPTIONS := -Wall -g -ggdb -fno-builtin -nostdinc -m32
 
 kernel.bin: kernel.o
 	objcopy -O "binary" kernel.o kernel.bin
 
 kernel.o: start.o kmain.o screen.o system.o
-	ld -T link.ld -g -o kernel.o start.o kmain.o screen.o system.o
+	ld -T link.ld -m elf_i386 -g -o kernel.o start.o kmain.o screen.o system.o
 
 start.o: start.asm
-	nasm -f elf64 -F dwarf -g -o start.o start.asm
+	nasm -f elf32 -F dwarf -g -o start.o start.asm
 
 kmain.o: kmain.c screen.h
 	gcc $(OPTIONS) -c -o kmain.o kmain.c

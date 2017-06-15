@@ -1,7 +1,7 @@
 #!/bin/bash
 
 img_dir=images/minix204
-QEMU=qemu-system-x86_64
+QEMU=qemu-system-i386
 dbg_opt='-S -s'
 
 #${QEMU} -m 8M -fda ${img_dir}/vfloppya.img -hda ${img_dir}/minix204.img -boot a -S -s
