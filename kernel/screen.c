@@ -27,22 +27,22 @@
 u16 cx, cy;
 u16 attr = (COLOR_BLACK << 12) | (COLOR_WHITE << 8);
 
-void goto_xy(u16 x, u16 y)
+static void update_cursor()
 {
-	u16 pos;
-
-	x = (x >= VGA_COLUMN_COUNT) ? VGA_COLUMN_COUNT - 1 : x;
-	y = (y >= VGA_ROW_COUNT) ? VGA_ROW_COUNT - 1 : y;
-
-	pos = y * VGA_COLUMN_COUNT + x;
+	u16 pos = cy * VGA_COLUMN_COUNT + cx;
 
 	outb(0x3d4, 14);
 	outb(0x3d5, pos >> 8);
 	outb(0x3d4, 15);
 	outb(0x3d5, pos);
+}
 
-	cx = x;
-	cy = y;
+void goto_xy(u16 x, u16 y)
+{
+	cx = (x >= VGA_COLUMN_COUNT) ? VGA_COLUMN_COUNT - 1 : x;
+	cy = (y >= VGA_ROW_COUNT) ? VGA_ROW_COUNT - 1 : y;
+
+	update_cursor();
 }
 
 void cls()
@@ -72,5 +72,6 @@ void putch(const char c)
 			cx = 0;
 			cy = (cy == VGA_ROW_COUNT) ? 0 : cy + 1;
 		}
+		update_cursor();
 	}
 }
