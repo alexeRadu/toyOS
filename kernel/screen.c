@@ -110,3 +110,8 @@ void puts(const char *s)
 		s++;
 	}
 }
+
+void set_screen_color(unsigned char bgcolor, unsigned char fgcolor)
+{
+	attr = (bgcolor << 12) | (fgcolor << 8);
+}
