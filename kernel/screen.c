@@ -45,6 +45,33 @@ void goto_xy(u16 x, u16 y)
 	update_cursor();
 }
 
+void scroll_by(unsigned int nlines)
+{
+	u16 *src = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	u16 *dst = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	int i;
+
+	nlines = (nlines >= VGA_ROW_COUNT) ? VGA_ROW_COUNT : nlines;
+	src += nlines * VGA_COLUMN_COUNT;
+
+	for (i = 0; i < (VGA_ROW_COUNT - nlines) * VGA_COLUMN_COUNT; i++) {
+		*dst = *src;
+		src++;
+		dst++;
+	}
+
+	for (i = 0; i < nlines * VGA_COLUMN_COUNT; i++)
+		*dst++ = attr | 0x20;
+
+	if (nlines > cy) {
+		cy = 0;
+		cx = 0;
+	} else {
+		cy -= nlines;
+	}
+	update_cursor();
+}
+
 void cls()
 {
 	unsigned int i, j;
