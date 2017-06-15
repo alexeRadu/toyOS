@@ -75,3 +75,11 @@ void putch(const char c)
 		update_cursor();
 	}
 }
+
+void puts(const char *s)
+{
+	while (*s != 0) {
+		putch(*s);
+		s++;
+	}
+}

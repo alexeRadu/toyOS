@@ -4,10 +4,7 @@ void kmain()
 {
 	cls();
 	goto_xy(0, 0);
-	putch('r');
-	putch('a');
-	putch('d');
-	putch('u');
+	puts("Radu is here");
 
 	/* This is the infinite loop */
 	while (1) {
