@@ -1,4 +1,3 @@
-#include "types.h"
 #include "system.h"
 #include "screen.h"
 
@@ -8,13 +7,13 @@
 #define VGA_ROW_COUNT		25	
 
 /* cursor position */
-u16 cx = 0;
-u16 cy = 0;
-u16 attr = (COLOR_BLACK << 12) | (COLOR_WHITE << 8);
+unsigned short cx = 0;
+unsigned short cy = 0;
+unsigned short attr = (COLOR_BLACK << 12) | (COLOR_WHITE << 8);
 
 static void update_cursor()
 {
-	u16 pos = cy * VGA_COLUMN_COUNT + cx;
+	unsigned short pos = cy * VGA_COLUMN_COUNT + cx;
 
 	outb(0x3d4, 14);
 	outb(0x3d5, pos >> 8);
@@ -22,7 +21,7 @@ static void update_cursor()
 	outb(0x3d5, pos);
 }
 
-void goto_xy(u16 x, u16 y)
+void goto_xy(unsigned short x, unsigned short y)
 {
 	cx = (x >= VGA_COLUMN_COUNT) ? VGA_COLUMN_COUNT - 1 : x;
 	cy = (y >= VGA_ROW_COUNT) ? VGA_ROW_COUNT - 1 : y;
@@ -32,8 +31,8 @@ void goto_xy(u16 x, u16 y)
 
 void scroll_by(unsigned int nlines)
 {
-	u16 *src = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
-	u16 *dst = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	unsigned short *src = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
+	unsigned short *dst = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	int i;
 
 	nlines = (nlines >= VGA_ROW_COUNT) ? VGA_ROW_COUNT : nlines;
@@ -64,7 +63,7 @@ void scroll_by(unsigned int nlines)
  */
 void cls()
 {
-	u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	unsigned short *addr = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	int i;
 
 	for (i = 0; i < VGA_ROW_COUNT * VGA_COLUMN_COUNT; i++)
@@ -76,7 +75,7 @@ void cls()
 
 void putch(const char c)
 {
-	volatile u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	unsigned short *addr = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	addr += (cy * VGA_COLUMN_COUNT + cx);
 
 	switch(c) {
