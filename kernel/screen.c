@@ -1,30 +1,15 @@
 #include "types.h"
 #include "system.h"
+#include "screen.h"
 
 #define VIDEO_MEMORY_BASE_ADDRESS	0x000b8000
-
-#define COLOR_BLACK		0x0
-#define COLOR_BLUE		0x1
-#define COLOR_GREEN		0x2
-#define COLOR_CYAN		0x3
-#define COLOR_RED		0x4
-#define COLOR_MAGENTA		0x5
-#define COLOR_BROWN		0x6
-#define COLOR_LIGHT_GREY	0x7
-#define COLOR_DARK_GREY		0x8
-#define COLOR_LIGHT_BLUE	0x9
-#define COLOR_LIGHT_GREEN	0xa
-#define COLOR_LIGHT_CYAN	0xb
-#define COLOR_LIGHT_RED		0xc
-#define COLOR_LIGHT_MAGENTA	0xd
-#define COLOR_LIGHT_BROWN	0xe
-#define COLOR_WHITE		0xf
 
 #define VGA_COLUMN_COUNT	80
 #define VGA_ROW_COUNT		25	
 
 /* cursor position */
-u16 cx, cy;
+u16 cx = 0;
+u16 cy = 0;
 u16 attr = (COLOR_BLACK << 12) | (COLOR_WHITE << 8);
 
 static void update_cursor()
@@ -72,18 +57,21 @@ void scroll_by(unsigned int nlines)
 	update_cursor();
 }
 
+/*
+ * This is equivalent to scroll_by(VGA_ROW_COUNT). For now I prefer to leave it
+ * as is because it is faster then the alternative and provides a clearer
+ * understanding to the reader (this is an educational kernel after all).
+ */
 void cls()
 {
-	unsigned int i, j;
-	volatile u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
-	u16 blank = (COLOR_BLACK << 12) | (COLOR_WHITE << 8) | 0x20;
+	u16 *addr = (u16*)VIDEO_MEMORY_BASE_ADDRESS;
+	int i;
 
-	for (i = 0; i < VGA_ROW_COUNT; i++) {
-		for (j = 0; j < VGA_COLUMN_COUNT; j++) {
-			*addr = blank;
-			addr++;
-		}
-	}
+	for (i = 0; i < VGA_ROW_COUNT * VGA_COLUMN_COUNT; i++)
+			*addr++ = attr | 0x20;
+
+	cx = cy = 0;
+	update_cursor();
 }
 
 void putch(const char c)

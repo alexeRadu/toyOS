@@ -2,11 +2,14 @@
 
 void kmain()
 {
+	set_screen_color(COLOR_CYAN, COLOR_RED);
 	cls();
-	goto_xy(26, 80);
+
+	goto_xy(5, 7);
 	puts("Radu is here");
 
-	scroll_by(26);
+	set_screen_color(COLOR_LIGHT_BROWN, COLOR_DARK_GREY);
+	scroll_by(3);
 
 	/* This is the infinite loop */
 	while (1) {
