@@ -6,6 +6,9 @@
 #define VGA_COLUMN_COUNT	80
 #define VGA_ROW_COUNT		25	
 
+/* should be a multiple of 2 */
+#define TAB_SIZE		8
+
 /* cursor position */
 unsigned short cx = 0;
 unsigned short cy = 0;
@@ -29,65 +32,73 @@ void goto_xy(unsigned short x, unsigned short y)
 	update_cursor();
 }
 
-void scroll_by(unsigned int nlines)
+static void scroll()
 {
-	unsigned short *src = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
+	unsigned short *src = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS +
+			     VGA_COLUMN_COUNT;
 	unsigned short *dst = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	int i;
 
-	nlines = (nlines >= VGA_ROW_COUNT) ? VGA_ROW_COUNT : nlines;
-	src += nlines * VGA_COLUMN_COUNT;
+	if (cy >= VGA_ROW_COUNT) {
+		for (i = 0; i < (VGA_ROW_COUNT - 1) * VGA_COLUMN_COUNT; i++)
+			*dst++ = *src++;
 
-	for (i = 0; i < (VGA_ROW_COUNT - nlines) * VGA_COLUMN_COUNT; i++) {
-		*dst = *src;
-		src++;
-		dst++;
+		for (i = 0; i < VGA_COLUMN_COUNT; i++)
+			*dst++ = attr | 0x20;
+
+		cy = VGA_ROW_COUNT - 1;
 	}
-
-	for (i = 0; i < nlines * VGA_COLUMN_COUNT; i++)
-		*dst++ = attr | 0x20;
-
-	if (nlines > cy) {
-		cy = 0;
-		cx = 0;
-	} else {
-		cy -= nlines;
-	}
-	update_cursor();
 }
 
-/*
- * This is equivalent to scroll_by(VGA_ROW_COUNT). For now I prefer to leave it
- * as is because it is faster then the alternative and provides a clearer
- * understanding to the reader (this is an educational kernel after all).
- */
 void cls()
 {
 	unsigned short *addr = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	int i;
 
 	for (i = 0; i < VGA_ROW_COUNT * VGA_COLUMN_COUNT; i++)
-			*addr++ = attr | 0x20;
+		*addr++ = attr | 0x20;
 
 	cx = cy = 0;
 	update_cursor();
 }
 
-void putch(const char c)
+static void __putch(const char c)
 {
 	unsigned short *addr = (unsigned short*)VIDEO_MEMORY_BASE_ADDRESS;
 	addr += (cy * VGA_COLUMN_COUNT + cx);
 
+	*addr = attr | c;
+	cx++;
+}
+
+void putch(const char c)
+{
 	switch(c) {
-	default:
-		*addr = attr | c;
-		cx += 1;
-		if (cx == VGA_COLUMN_COUNT) {
-			cx = 0;
-			cy = (cy == VGA_ROW_COUNT) ? 0 : cy + 1;
-		}
-		update_cursor();
+	case 0x20 ... 0x7f: /* any printable character */
+		__putch(c);
+		break;
+	case '\b': 	/* 0x08 - backspace */
+		cx = (cx == 0) ? 0 : (cx - 1);
+		break;
+	case '\t':	/* 0x09 - tab */
+		cx = (cx + TAB_SIZE) & ~(TAB_SIZE - 1);
+		break;
+	case '\n':	/* 0x0a - line-feed == newline */
+		cx = 0;
+		cy++;
+		break;
+	case '\r':	/* 0x0d - carriage return */
+		cx = 0;
+		break;
 	}
+
+	if (cx >= VGA_COLUMN_COUNT) {
+		cx = 0;
+		cy++;
+	}
+
+	scroll();
+	update_cursor();
 }
 
 void puts(const char *s)

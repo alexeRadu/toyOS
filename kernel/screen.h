@@ -21,7 +21,6 @@
 #define COLOR_WHITE		0xf
 
 void goto_xy(u16 x, u16 y);
-void scroll_by(unsigned int nlines);
 void cls();
 void putch(const char c);
 void puts(const char *s);
