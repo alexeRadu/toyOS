@@ -1,0 +1,11 @@
+#!/bin/bash
+
+QEMU=qemu-system-i386
+dbg_opt='-S -s'
+
+${QEMU} -fda bootloader.bin ${dbg_opt} &
+
+gdb  \
+    -ex 'target remote localhost:1234' \
+    -ex 'add-symbol-file bootloader.o 0x7c00' \
+    -ex 'break *0x7c00'
