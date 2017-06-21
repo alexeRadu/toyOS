@@ -1,11 +1,15 @@
 .code16
 .text
 	.globl _start;
+	.extern main
 
 _start:
-	movb $'X', %al
-	movb $0x0e, %ah
-	int $0x10
+	mov $0x0a00, %ax
+	mov %ax, %ss
+	mov $0x0000, %bp
+	mov $0x0400, %sp
+	
+	call main
 
 _loop:
 	jmp _loop
