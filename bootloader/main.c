@@ -1,8 +1,34 @@
 __asm__(".code16\n");
 
+typedef unsigned char 	u8;
+typedef unsigned short 	u16;
+
+#define __read_reg8(name)	\
+	({ u8 r; asm volatile("movb %0,%%"name : "=rm" (r)); r; })
+
+#define __read_reg16(name)	\
+	({ u16 r; asm volatile("movw %0,%%"name : "=rm" (r)); r; })
+
+#define __write_reg8(val, name)	\
+	do { asm volatile("movb %0,%%"name : : "rmi" (val)); } while(0)
+
+#define __write_reg16(val, name)\
+	do { asm volatile("movw %0,%%"name : : "rmi" (val)); } while(0)
+
+#define ah() 	__read_reg8("ah")
+#define al() 	__read_reg8("al")
+
+#define set_al(val)	__write_reg8(val, "al")
+#define set_ah(val)	__write_reg8(val, "ah")
+
+#define bios_int(val)	\
+	do { asm volatile("int %0" : : "i" (val)); } while(0)
+
+
 void main()
 {
-     __asm__ __volatile__ ("movb $'X'  , %al\n");
-     __asm__ __volatile__ ("movb $0x0e, %ah\n");
-     __asm__ __volatile__ ("int $0x10\n");
+	set_al('X');
+	set_ah(0x0e);
+
+	bios_int(0x10);
 }
