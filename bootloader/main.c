@@ -24,11 +24,19 @@ typedef unsigned short 	u16;
 #define bios_int(val)	\
 	do { asm volatile("int %0" : : "i" (val)); } while(0)
 
+static void putch(char c)
+{
+	set_al(c);
+	set_ah(0x0e);
+	bios_int(0x10);
+}
 
 void main()
 {
-	set_al('X');
-	set_ah(0x0e);
+	char *c = "Hello there junior";
 
-	bios_int(0x10);
+	while (*c) {
+		putch(*c);
+		c++;
+	}
 }
