@@ -1,4 +1,4 @@
-__asm__(".code16\n");
+__asm__(".code16gcc\n");
 
 typedef unsigned char 	u8;
 typedef unsigned short 	u16;
