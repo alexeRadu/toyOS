@@ -31,12 +31,17 @@ static void putch(char c)
 	bios_int(0x10);
 }
 
+static void puts(const char *s)
+{
+	while (*s != 0) {
+		putch(*s);
+		s++;
+	}
+}
+
 void main()
 {
 	char *c = "Hello there junior";
 
-	while (*c) {
-		putch(*c);
-		c++;
-	}
+	puts(c);
 }
