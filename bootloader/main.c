@@ -47,6 +47,10 @@ static void puts(const char *s)
 {
 	while (*s != 0) {
 		putch(*s);
+
+		if (*s == '\n')
+			putch('\r');
+
 		s++;
 	}
 }
@@ -61,9 +65,9 @@ static void goto_xy(u8 x, u8 y)
 	bios_int(0x10);
 }
 
-static void cls()
+static void __scroll_by(u8 nlines)
 {
-	set_al(80);
+	set_al(nlines);
 	set_bh(0x0f);
 	set_ch(0x00);
 	set_cl(0x00);
@@ -72,14 +76,16 @@ static void cls()
 
 	set_ah(0x06);
 	bios_int(0x10);
+}
 
+static void cls()
+{
+	__scroll_by(25);
 	goto_xy(0, 0);
 }
 
 void main()
 {
-	char *c = "Hello there junior";
-
 	cls();
-	puts(c);
+	puts("Hello there\nHow are you?");
 }
