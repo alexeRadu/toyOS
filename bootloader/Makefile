@@ -1,3 +1,10 @@
+define rm_file
+        if [ -f $(1) ]; then           \
+                rm $(1);               \
+                echo "RM        $(1)"; \
+        fi
+endef
+
 bootloader.bin: bootloader.o
 	objcopy  -O "binary" bootloader.o bootloader.bin
 
@@ -11,7 +18,7 @@ start.o: start.S
 	as -32 -g -o start.o start.S
 
 clean:
-	rm -f start.o
-	rm -f main.o
-	rm -f bootloader.o
-	rm -f bootloader.bin
+	@$(call rm_file, start.o)
+	@$(call rm_file, main.o)
+	@$(call rm_file, bootloader.o)
+	@$(call rm_file, bootloader.bin)
