@@ -14,17 +14,33 @@ define rm_file
         fi
 endef
 
+define do_cc
+	cfile=$(1);                                \
+	ofile="$${cfile%.*}.o";                    \
+	$(CC) -c $(CFLAGS) $${cfile} -o $${ofile}; \
+	echo "CC        $(1)"
+endef
+
+define do_as
+        asfile=$(1)                               \
+	ofile="$${asfile%.*}.o";                  \
+	$(AS) $(ASFLAGS) $${asfile} -o $${ofile}; \
+	echo "AS        $(1)"
+endef
+
 bootloader.bin: bootloader.o
-	objcopy  -O "binary" bootloader.o bootloader.bin
+	@objcopy  -O "binary" bootloader.o bootloader.bin
+	@echo "OBJCOPY   $@"
 
 bootloader.o: start.o main.o
-	$(LD) -T link.ld $(LDFLAGS) $^ -o $@
+	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
+	@echo "LD        $@"
 
 main.o: main.c
-	$(CC) -c $(CFLAGS) $< -o $@
+	@$(call do_cc,$<)
 
 start.o: start.S
-	$(AS) $(ASFLAGS) $< -o $@
+	@$(call do_as,$<)
 
 clean:
 	@$(call rm_file, start.o)
