@@ -5,7 +5,7 @@ LD := ld
 
 #DEBUG := -g
 
-CFLAGS := $(DEBUG) -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables
+CFLAGS := $(DEBUG) -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables -Qn
 ASFLAGS := $(DEBUG) -32
 LDFLAGS := $(DEBUG) -m elf_i386 -nostdlib
 
