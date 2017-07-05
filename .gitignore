@@ -4,3 +4,5 @@ ubuntu-*.log
 
 *.o
 *.bin
+
+*.swp
