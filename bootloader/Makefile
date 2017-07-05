@@ -3,9 +3,11 @@ CC := gcc
 AS := as
 LD := ld
 
-CFLAGS := -g -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables
-ASFLAGS := -g -32
-LDFLAGS := -g -m elf_i386 -nostdlib
+#DEBUG := -g
+
+CFLAGS := $(DEBUG) -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables
+ASFLAGS := $(DEBUG) -32
+LDFLAGS := $(DEBUG) -m elf_i386 -nostdlib
 
 define rm_file
         if [ -f $(1) ]; then           \
