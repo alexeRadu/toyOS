@@ -3,7 +3,7 @@ CC := gcc
 AS := as
 LD := ld
 
-CFLAGS := -g -m32 -Wall -Werror -ffreestanding
+CFLAGS := -g -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables
 ASFLAGS := -g -32
 LDFLAGS := -g -m elf_i386 -nostdlib
 
