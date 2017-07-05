@@ -1,3 +1,6 @@
 .vagrant
 ubuntu-*.log
 .gdb_history
+
+*.o
+*.bin
