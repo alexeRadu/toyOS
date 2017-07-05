@@ -1,7 +1,7 @@
 .code16
-.text
-	.globl _start;
-	.extern main
+.section .bootsector.txt
+.globl _start;
+.extern main
 
 _start:
 	mov $0x0a00, %ax

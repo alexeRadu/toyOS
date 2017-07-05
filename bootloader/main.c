@@ -1,9 +1,12 @@
 __asm__(".code16gcc\n");
 
 #include "screen.h"
+#include "boot.h"
 
-void main()
+const char BOOTSECTOR_DATA *greet_msg = "Hello there";
+
+void BOOTSECTOR main()
 {
 	cls();
-	puts("Hello there\nHow are you?");
+	puts(greet_msg);
 }
