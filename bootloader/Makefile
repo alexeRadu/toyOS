@@ -3,7 +3,7 @@ CC := gcc
 AS := as
 LD := ld
 
-#DEBUG := -g
+DEBUG := -g
 
 CFLAGS := $(DEBUG) -m32 -Wall -Werror -ffreestanding -fno-exceptions -fno-asynchronous-unwind-tables -Qn
 ASFLAGS := $(DEBUG) -32
@@ -34,22 +34,26 @@ bootloader.bin: bootloader.o
 	@objcopy  -O "binary" bootloader.o bootloader.bin
 	@echo "OBJCOPY   $@"
 
-bootloader.o: start.o main.o screen.o
+bootloader.o: start.o main.o screen.o disk.o
 	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
 	@echo "LD        $@"
 
-main.o: main.c screen.h types.h
+main.o: main.c screen.h types.h boot.h
 	@$(call do_cc,$<)
 
-screen.o: screen.c cpu.h types.h
+screen.o: screen.c cpu.h types.h boot.h
+	@$(call do_cc,$<)
+
+disk.o: disk.c cpu.h types.h boot.h
 	@$(call do_cc,$<)
 
 start.o: start.S
 	@$(call do_as,$<)
 
 clean:
-	@$(call rm_file, start.o)
-	@$(call rm_file, main.o)
-	@$(call rm_file, screen.o)
-	@$(call rm_file, bootloader.o)
-	@$(call rm_file, bootloader.bin)
+	@$(call rm_file,start.o)
+	@$(call rm_file,main.o)
+	@$(call rm_file,screen.o)
+	@$(call rm_file,disk.o)
+	@$(call rm_file,bootloader.o)
+	@$(call rm_file,bootloader.bin)

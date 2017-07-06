@@ -30,6 +30,11 @@
 #define set_dl(val)	__write_reg8(val, "dl")
 #define set_dh(val)	__write_reg8(val, "dh")
 
+#define set_ax(val)	__write_reg16(val, "ax")
+#define set_bx(val)	__write_reg16(val, "bx")
+#define set_cx(val)	__write_reg16(val, "cx")
+#define set_dx(val)	__write_reg16(val, "dx")
+
 #define bios_int(val)	\
 	do { asm volatile("int %0" : : "i" (val)); } while(0)
 
