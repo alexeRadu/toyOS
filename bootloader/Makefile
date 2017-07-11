@@ -34,11 +34,11 @@ bootloader.bin: bootloader.o
 	@objcopy  -O "binary" bootloader.o bootloader.bin
 	@echo "OBJCOPY   $@"
 
-bootloader.o: start.o main.o screen.o disk.o
+bootloader.o: start.o main.o screen.o disk.o chs.o boot2.o
 	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
 	@echo "LD        $@"
 
-main.o: main.c screen.h types.h boot.h
+main.o: main.c screen.h types.h boot.h disk.h
 	@$(call do_cc,$<)
 
 screen.o: screen.c cpu.h types.h boot.h
@@ -47,13 +47,21 @@ screen.o: screen.c cpu.h types.h boot.h
 disk.o: disk.c cpu.h types.h boot.h
 	@$(call do_cc,$<)
 
+chs.o: chs.S
+	@$(call do_as,$<)
+
 start.o: start.S
 	@$(call do_as,$<)
+
+boot2.o: boot2.c screen.h boot.h
+	@$(call do_cc,$<)
 
 clean:
 	@$(call rm_file,start.o)
 	@$(call rm_file,main.o)
 	@$(call rm_file,screen.o)
 	@$(call rm_file,disk.o)
+	@$(call rm_file,chs.o)
+	@$(call rm_file,boot2.o)
 	@$(call rm_file,bootloader.o)
 	@$(call rm_file,bootloader.bin)

@@ -3,34 +3,21 @@ __asm__(".code16gcc\n");
 #include "cpu.h"
 #include "boot.h"
 
-int read_disk_sectors(int mem, unsigned int drive,
+void compute_chs();
+
+int BOOTSECTOR read_disk_sectors(int mem, unsigned int drive,
 				 unsigned int sector_start,
 				 unsigned int sector_count)
 {
-	u8 sector;
-	u8 head;
-	u8 cylinder;
+	set_cl(1);	/* sector = 1 */
+	set_dh(0);	/* head = 0 */
+	set_ch(0);	/* cylinder = 0 */
+	set_al(sector_start);
 
-	if (drive > 3)
-		return 1;
+	compute_chs();
 
-	/* convert the sector index to C, H, S */
-	sector = (sector_start % 18) + 1;
-	sector_start = sector_start / 18;
-
-	head = sector_start % 2;
-	sector_start = sector_start / 2;
-
-	cylinder = sector_start % 80;
-	sector_start = sector_start / 80;
-
-	if (sector_start)
-		return 1;
-
+	/* read disk sectors */
 	set_al(sector_count);
-	set_ch(cylinder);
-	set_cl(sector);
-	set_dh(head);
 	set_dl(drive);
 	set_bx(mem);
 
