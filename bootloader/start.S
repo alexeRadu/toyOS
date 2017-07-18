@@ -1,15 +1,10 @@
 .code16
-.section .bootsector.txt
 .globl _start;
-.extern main
+.extern boot
+.section .text
 
 _start:
-	mov $0x0a00, %ax
-	mov %ax, %ss
-	mov $0x0000, %bp
-	mov $0x0400, %sp
-	
-	call main
+	jmp _start
 
 _loop:
 	jmp _loop

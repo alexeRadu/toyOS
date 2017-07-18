@@ -30,38 +30,46 @@ define do_as
 	echo "AS        $(1)"
 endef
 
-bootloader.bin: bootloader.o
-	@objcopy  -O "binary" bootloader.o bootloader.bin
-	@echo "OBJCOPY   $@"
+define do_objcopy
+        ofile=$(1)                                 \
+	binfile="$${ofile%.*}.bin";                \
+	objcopy -O "binary" $${ofile} $${binfile}; \
+	echo "OBJCOPY   $(1)"
+endef
 
-bootloader.o: start.o main.o screen.o disk.o chs.o boot2.o
+bootloader.bin: bootsect.bin boot2.bin
+	@cat bootsect.bin > bootloader.bin
+	@cat boot2.bin >> bootloader.bin
+	@echo "DONE      $@"
+
+bootsect.bin: bootsect.o
+	@$(call do_objcopy,$<)
+
+bootsect.o: bootsect.S
+	@$(call do_as,$<)
+
+boot2.bin: boot2.o
+	@$(call do_objcopy,$<)
+
+boot2.o: start.o boot.o screen.o
 	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
 	@echo "LD        $@"
-
-main.o: main.c screen.h types.h boot.h disk.h
-	@$(call do_cc,$<)
-
-screen.o: screen.c cpu.h types.h boot.h
-	@$(call do_cc,$<)
-
-disk.o: disk.c cpu.h types.h boot.h
-	@$(call do_cc,$<)
-
-chs.o: chs.S
-	@$(call do_as,$<)
 
 start.o: start.S
 	@$(call do_as,$<)
 
-boot2.o: boot2.c screen.h boot.h
+boot.o: boot.c
+	@$(call do_cc,$<)
+
+screen.o: screen.c
 	@$(call do_cc,$<)
 
 clean:
-	@$(call rm_file,start.o)
-	@$(call rm_file,main.o)
-	@$(call rm_file,screen.o)
-	@$(call rm_file,disk.o)
-	@$(call rm_file,chs.o)
-	@$(call rm_file,boot2.o)
-	@$(call rm_file,bootloader.o)
 	@$(call rm_file,bootloader.bin)
+	@$(call rm_file,bootsect.bin)
+	@$(call rm_file,bootsect.o)
+	@$(call rm_file,boot2.bin)
+	@$(call rm_file,boot2.o)
+	@$(call rm_file,start.o)
+	@$(call rm_file,boot.o)
+	@$(call rm_file,screen.o)

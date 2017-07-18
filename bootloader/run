@@ -7,5 +7,8 @@ ${QEMU} -fda bootloader.bin ${dbg_opt} &
 
 gdb  \
     -ex 'target remote localhost:1234' \
-    -ex 'add-symbol-file bootloader.o 0x7c00' \
-    -ex 'break *0x7c00'
+    -ex 'add-symbol-file bootsect.o 0x7c00' \
+    -ex 'add-symbol-file boot2.o 0x7e00' \
+    -ex 'break *0x7c00' \
+    -ex 'break *0x7c56' \
+    -ex 'break *0x7e00'

@@ -1,9 +1,8 @@
 __asm__(".code16gcc\n");
 
 #include "cpu.h"
-#include "boot.h"
 
-static void BOOTSECTOR putch(char c)
+static void putch(char c)
 {
 	set_al(c);
 
@@ -11,7 +10,7 @@ static void BOOTSECTOR putch(char c)
 	bios_int(0x10);
 }
 
-void BOOTSECTOR puts(const char *s)
+void puts(const char *s)
 {
 	while (*s != 0) {
 		putch(*s);
@@ -23,7 +22,7 @@ void BOOTSECTOR puts(const char *s)
 	}
 }
 
-void BOOTSECTOR goto_xy(u8 x, u8 y)
+void goto_xy(u8 x, u8 y)
 {
 	set_dh(y);		/* row */
 	set_dl(x);		/* column */
@@ -33,7 +32,7 @@ void BOOTSECTOR goto_xy(u8 x, u8 y)
 	bios_int(0x10);
 }
 
-static void BOOTSECTOR __scroll_by(u8 nlines)
+static void __scroll_by(u8 nlines)
 {
 	set_al(nlines);
 	set_bh(0x0f);
@@ -46,7 +45,7 @@ static void BOOTSECTOR __scroll_by(u8 nlines)
 	bios_int(0x10);
 }
 
-void BOOTSECTOR cls()
+void cls()
 {
 	__scroll_by(25);
 	goto_xy(0, 0);
