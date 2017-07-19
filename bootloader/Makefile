@@ -24,15 +24,21 @@ define do_cc
 endef
 
 define do_as
-        asfile=$(1)                               \
+        asfile=$(1);                              \
 	ofile="$${asfile%.*}.o";                  \
 	$(AS) $(ASFLAGS) $${asfile} -o $${ofile}; \
 	echo "AS        $(1)"
 endef
 
+define do_objcopy
+	ofile=$(1);					\
+	binfile="$${ofile%.*}.bin";			\
+	objcopy -O "binary" $${ofile} $${binfile};	\
+	echo "OBJCOPY   $${binfile}"
+endef
+
 bootloader.bin: bootloader.o
-	@objcopy  -O "binary" bootloader.o bootloader.bin
-	@echo "OBJCOPY   $@"
+	@$(call do_objcopy,$<)
 
 bootloader.o: start.o main.o screen.o disk.o chs.o boot2.o
 	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
