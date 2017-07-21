@@ -4,7 +4,7 @@
 .section .text
 
 _start:
-	jmp boot
+	jmp 	boot
 
 _loop:
-	jmp _loop
+	jmp	_loop

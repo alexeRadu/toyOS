@@ -22,7 +22,7 @@ _boot:
 	movw	$0x76ff, %bp
 	movw	$0x76ff, %sp
 
-	/* set DS, ES to point to the current sector */
+	/* set DS to point to the current sector */
 	movw	$0x07c0, %ax
 	movw	%ax, %ds
 
@@ -44,7 +44,9 @@ _boot:
 	cmp	$0x00, %ah
 	jne	_pr_err
 
-	/* Else goto _start */
+	/* Else goto clear DS and goto _start */
+	mov	$0x0000, %ax
+	mov	%ax, %ds
 	movw	$0x7e00, %cx
 	jmp	*%cx
 
