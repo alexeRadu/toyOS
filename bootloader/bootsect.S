@@ -12,8 +12,6 @@ err_msg:
 	.ascii	"Error loading second stage bootloader\x00"
 
 _boot:
-	cli
-
 	/*
 	 * Setup the stack.
 	 * The stack starts below the bootsector (0x7c00) and grows downwards
@@ -21,8 +19,8 @@ _boot:
 	 */
 	movw	$0x0050, %ax
 	movw	%ax, %ss
-	movw	$0, %bp
-	movw	$0x7700, %bp
+	movw	$0x0000, %bp
+	movw	$0x7700, %sp
 
 	/* set DS, ES to point to the current sector */
 	movw	$0x07c0, %ax
@@ -42,11 +40,14 @@ _boot:
 	mov	$0x02, %ah
 	int	$0x13
 
-	/* In case of success jump to _start */
+	/* In case of error print message */
 	cmp	$0x00, %ah
-	je	0x7e00
+	jne	_pr_err
 
-	/* In case of error print error message */
+	/* Else goto _start */
+	movw	$0x7e00, %cx
+	jmp	*%cx
+
 _pr_err:
 	mov	$0x0e, %ah
 	movw	$err_msg, %si
