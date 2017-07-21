@@ -19,8 +19,8 @@ _boot:
 	 */
 	movw	$0x0050, %ax
 	movw	%ax, %ss
-	movw	$0x0000, %bp
-	movw	$0x7700, %sp
+	movw	$0x76ff, %bp
+	movw	$0x76ff, %sp
 
 	/* set DS, ES to point to the current sector */
 	movw	$0x07c0, %ax
