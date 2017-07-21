@@ -4,5 +4,6 @@ __asm__(".code16gcc\n");
 
 void boot()
 {
+	cls();
 	puts("Second stange bootloader started\n");
 }
