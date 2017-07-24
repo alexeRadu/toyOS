@@ -51,7 +51,7 @@ bootsect.o: bootsect.S
 boot2.bin: boot2.o
 	@$(call do_objcopy,$<)
 
-boot2.o: start.o boot.o screen.o
+boot2.o: start.o boot.o screen.o vsnprintf.o
 	@$(LD) -T link.ld $(LDFLAGS) $^ -o $@
 	@echo "LD        $@"
 
@@ -62,6 +62,9 @@ boot.o: boot.c
 	@$(call do_cc,$<)
 
 screen.o: screen.c
+	@$(call do_cc,$<)
+
+vsnprintf.o: vsnprintf.c
 	@$(call do_cc,$<)
 
 clean:
