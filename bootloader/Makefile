@@ -76,3 +76,4 @@ clean:
 	@$(call rm_file,start.o)
 	@$(call rm_file,boot.o)
 	@$(call rm_file,screen.o)
+	@$(call rm_file,vsnprintf.o)
