@@ -4,7 +4,25 @@ __asm__(".code16gcc\n");
 
 int vsnprintf(char *buf, int size, const char *fmt, va_list args)
 {
-	return 0;
+	int read = 0;
+
+	while (1) {
+		if (*fmt == 0)
+			break;
+
+		if (read >= size)
+			break;
+
+		if (*fmt != '%') {
+			*buf = *fmt;
+			buf++;
+			read++;
+		}
+
+		fmt++;
+	}
+
+	return read;
 }
 
 int snprintf(char *buf, int size, const char *fmt, ...)

@@ -3,7 +3,7 @@
 	jmp _boot
 
 data:
-	.byte	0x01	/* number of sectors to read */
+	.byte	0x02	/* number of sectors to read */
 	.byte 	0x00	/* cylinder */
 	.byte 	0x02	/* sector */
 	.byte	0x00	/* head */
