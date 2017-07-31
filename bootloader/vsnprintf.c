@@ -11,14 +11,14 @@ __asm__(".code16gcc\n");
 #define FMT_FLAG_SPACE			0x04
 #define FMT_FLAG_SHARP			0x08
 #define FMT_FLAG_ZERO_LEFT_PAD		0x10
-#define FMT_FLAG_WIDHT_AS_ARG		0x20
+#define FMT_FLAG_WIDTH_AS_ARG		0x20
 #define FMT_FLAG_PRECISION_AS_ARG	0x40
 
-#define FMT_LEGNTH_NONE			0x00
-#define FMT_LENGHT_SHORT_SHORT		0x01
-#define FMT_LENGHT_SHORT		0x02
+#define FMT_LENGTH_NONE			0x00
+#define FMT_LENGTH_SHORT_SHORT		0x01
+#define FMT_LENGTH_SHORT		0x02
 #define FMT_LENGTH_LONG			0x03
-#define FMT_LENGHT_LONG_LONG		0x04
+#define FMT_LENGTH_LONG_LONG		0x04
 
 struct fmt_spec {
 	u8 flags;
@@ -30,11 +30,11 @@ struct fmt_spec {
 
 static void clear_fmt_spec(struct fmt_spec *spec)
 {
-	spec.flags = FMT_FLAG_NONE;
-	spec.length = FMT_LENGTH_NONE;
-	spec.width = 0;
-	spec.precision = 0;
-	char specifier = 0;
+	spec->flags = FMT_FLAG_NONE;
+	spec->length = FMT_LENGTH_NONE;
+	spec->width = 0;
+	spec->precision = 0;
+	spec->specifier = 0;
 }
 
 static int parse_fmt_flags(const char *fmt, struct fmt_spec *spec)
@@ -44,19 +44,19 @@ static int parse_fmt_flags(const char *fmt, struct fmt_spec *spec)
 	while (*fmt != 0) {
 		switch(*fmt) {
 		case '-':
-			spec.flags |= FMT_FLAG_LEFT_JUSTIFY;
+			spec->flags |= FMT_FLAG_LEFT_JUSTIFY;
 			break;
 		case '+':
-			spec.flags |= FMT_FLAG_FORCE_SIGN;
+			spec->flags |= FMT_FLAG_FORCE_SIGN;
 			break;
 		case ' ':
-			spec.flags |= FMT_FLAG_SPACE;
+			spec->flags |= FMT_FLAG_SPACE;
 			break;
 		case '#':
-			spec.flags |= FMT_FLAG_SHARP;
+			spec->flags |= FMT_FLAG_SHARP;
 			break;
 		case '0':
-			spec.flags |= FMT_FLAG_ZERO_LEFT_PAD;
+			spec->flags |= FMT_FLAG_ZERO_LEFT_PAD;
 			break;
 		default:
 			goto out;
@@ -76,7 +76,7 @@ static int parse_fmt_width(const char *fmt, struct fmt_spec *spec)
 	u16 val = 0;
 
 	if (*fmt == '*') {
-		spec.flags |= FMT_FLAG_WIDTH_AS_ARG;
+		spec->flags |= FMT_FLAG_WIDTH_AS_ARG;
 		return 1;
 	}
 
@@ -93,7 +93,7 @@ static int parse_fmt_width(const char *fmt, struct fmt_spec *spec)
 		fmt++;
 	}
 
-	spec.width = val;
+	spec->width = val;
 
 	return count;
 }
@@ -118,7 +118,7 @@ static int parse_fmt_precision(const char *fmt, struct fmt_spec *spec)
 		fmt++;
 	}
 
-	spec.precision = val;
+	spec->precision = val;
 
 	return count;
 }
@@ -134,19 +134,19 @@ static int parse_fmt_length(const char *fmt, struct fmt_spec *spec)
 	switch (c) {
 	case 'h':
 		if (*fmt == 'h') {
-			spec.length = FMT_LENGTH_SHORT_SHORT;
+			spec->length = FMT_LENGTH_SHORT_SHORT;
 			return 2;
 		} else {
-			spec.length = FMT_LENGTH_SHORT;
+			spec->length = FMT_LENGTH_SHORT;
 			return 1;
 		}
 		break;
 	case 'l':
 		if (*fmt == 'l') {
-			spec.length = FMT_LENGTH_LONG_LONG;
+			spec->length = FMT_LENGTH_LONG_LONG;
 			return 2;
 		} else {
-			spec.length = FMT_LENGTH_LONG;
+			spec->length = FMT_LENGTH_LONG;
 			return 1;
 		}
 		break;
@@ -167,7 +167,7 @@ static int parse_fmt_specifier(const char *fmt, struct fmt_spec *spec)
 	case 'o': 	/* octal */
 	case 'x':	/* hexadecimal */
 	case 'X':
-		spec.specifier = *fmt;
+		spec->specifier = *fmt;
 		break;
 	default:
 		return 0;
@@ -208,7 +208,7 @@ static int parse_fmt_spec(const char *fmt, struct fmt_spec *spec)
 	fmt += count;
 	read += count;
 
-	count = parse_fmt_length(fmt, spec);
+	count = parse_fmt_specifier(fmt, spec);
 	if (count == 0)
 		return 0;
 
@@ -224,7 +224,7 @@ static int parse_fmt_spec(const char *fmt, struct fmt_spec *spec)
 int vsnprintf(char *buf, int size, const char *fmt, va_list args)
 {
 	struct fmt_spec spec;
-	char numstr[MAX_LEN_STR];
+	/* char numstr[MAX_LEN_STR]; */
 	int new_spec = 0;
 	int written = 0;
 	int count;
@@ -259,11 +259,12 @@ int vsnprintf(char *buf, int size, const char *fmt, va_list args)
 		}
 
 		fmt += count;
-		switch (spec->specifier) {
+		switch (spec.specifier) {
 		case 'd':
 		case 'i':
 			break;
 		}
+	}
 
 	return written;
 }
@@ -278,4 +279,4 @@ int snprintf(char *buf, int size, const char *fmt, ...)
 	va_end(vl);
 
 	return ret;
-
+}
