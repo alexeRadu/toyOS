@@ -217,6 +217,11 @@ static int parse_fmt_spec(const char *fmt, struct fmt_spec *spec)
 	return read;
 }
 
+static int int2str(char *buf, int num, struct fmt_spec *spec)
+{
+	return 0;
+}
+
 /*
  * This function can never return an error. The return value is the number of
  * written characters to *buf and therefore can only be >= 0.
@@ -224,9 +229,10 @@ static int parse_fmt_spec(const char *fmt, struct fmt_spec *spec)
 int vsnprintf(char *buf, int size, const char *fmt, va_list args)
 {
 	struct fmt_spec spec;
-	/* char numstr[MAX_LEN_STR]; */
+	char strbuf[MAX_LEN_STR];
 	int new_spec = 0;
 	int written = 0;
+	int num;
 	int count;
 
 	while (1) {
@@ -259,11 +265,19 @@ int vsnprintf(char *buf, int size, const char *fmt, va_list args)
 		}
 
 		fmt += count;
+
 		switch (spec.specifier) {
 		case 'd':
 		case 'i':
+			num = va_arg(args, int);
+			count = int2str(strbuf, num, &spec);
 			break;
 		}
+
+		/* TODO: implement strcpy */
+		/* do a strcpy here */
+
+		written += count;
 	}
 
 	return written;
